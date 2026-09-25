@@ -20,7 +20,7 @@ export default function Home() {
     <>
       <section
         className={`home-hero ${heroImage ? "home-hero--image" : ""}`}
-        style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
+        style={heroImage ? { "--hero-img": `url(${heroImage})` } : undefined}
       >
         <div className="container home-hero__inner">
           <p className="section-eyebrow" style={{ color: "var(--accent-hover)" }}>

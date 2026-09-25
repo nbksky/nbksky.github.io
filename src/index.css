@@ -161,6 +161,11 @@ p {
   background-position: center;
 }
 
+.page-hero--image {
+  background-image: var(--hero-img), linear-gradient(135deg, var(--primary-dark), var(--primary));
+  background-repeat: no-repeat;
+}
+
 .page-hero--image::before {
   content: "";
   position: absolute;

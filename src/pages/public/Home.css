@@ -6,6 +6,9 @@
 
 /* 메인 이미지는 오버레이 없이 그대로 표시 */
 .home-hero--image {
+  /* 이미지 아래에 테마 그라데이션을 깔아 투명 배경 인물 사진에도 테마 색이 보이게 한다 */
+  background-image: var(--hero-img), radial-gradient(circle at 80% 20%, var(--primary-light), var(--primary-dark) 65%);
+  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   min-height: 560px;

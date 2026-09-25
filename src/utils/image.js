@@ -37,6 +37,8 @@ export async function resizeImage(file, { maxWidth = 1200, maxBytes = 200 * 1024
     }
   }
 
+  // 투명 배경을 유지해야 하는 형식(PNG/WebP/GIF)은 알파를 지원하는 WebP로 저장한다.
+  const keepAlpha = /^image\/(png|webp|gif)$/.test(file.type);
   let width = Math.min(sw, maxWidth);
   let quality = 0.85;
 
@@ -46,11 +48,13 @@ export async function resizeImage(file, { maxWidth = 1200, maxBytes = 200 * 1024
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, width, height);
+    if (!keepAlpha) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+    }
     ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
 
-    const dataUrl = canvas.toDataURL("image/jpeg", quality);
+    const dataUrl = canvas.toDataURL(keepAlpha ? "image/webp" : "image/jpeg", quality);
     // base64 문자열 길이 → 실제 바이트 근사
     const bytes = Math.round((dataUrl.length - dataUrl.indexOf(",") - 1) * 0.75);
     if (bytes <= maxBytes) return dataUrl;
