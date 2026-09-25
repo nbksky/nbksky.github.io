@@ -29,6 +29,7 @@ export const defaultSettings = {
   aboutText: "사무소 소개 내용을 관리자 페이지에서 입력해주세요.",
   videoUrl: "",
   mapUrl: "",
+  notifyEmail: "",
 };
 
 // ---------- Settings ----------

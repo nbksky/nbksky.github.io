@@ -45,6 +45,7 @@ export default function Consultations() {
                 <th>상태</th>
                 <th>이름</th>
                 <th>연락처</th>
+                <th>이메일</th>
                 <th>내용</th>
                 <th>접수일시</th>
                 <th></th>
@@ -64,6 +65,7 @@ export default function Consultations() {
                   </td>
                   <td>{c.name}</td>
                   <td>{c.phone}</td>
+                  <td>{c.email || "-"}</td>
                   <td style={{ maxWidth: 280, whiteSpace: "pre-line" }}>{c.message}</td>
                   <td>{formatDate(c.createdAt)}</td>
                   <td>

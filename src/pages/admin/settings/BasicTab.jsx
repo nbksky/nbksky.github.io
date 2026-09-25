@@ -9,6 +9,11 @@ const FIELDS = [
   { name: "phone", label: "전화번호", type: "input" },
   { name: "address", label: "주소", type: "input" },
   {
+    name: "notifyEmail",
+    label: "상담 알림 받을 메일 주소 (상담신청이 들어오면 이 주소로 내용이 발송됩니다. 비워두면 발송 안 함)",
+    type: "input",
+  },
+  {
     name: "mapUrl",
     label: "네이버 지도 링크 (네이버 지도에서 장소 검색 → 공유 → 링크 복사 후 붙여넣기)",
     type: "input",

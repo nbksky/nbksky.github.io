@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useSettings } from "../../contexts/SettingsContext";
 import { submitConsultation } from "../../api/content";
+import { sendConsultationEmail } from "../../api/notify";
 import { firebaseReady } from "../../firebase";
 import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
 import "./ContentPage.css";
 
-const initialForm = { name: "", phone: "", message: "" };
+const initialForm = { name: "", phone: "", email: "", message: "" };
 
 export default function Consultation() {
   const { settings } = useSettings();
@@ -24,6 +25,7 @@ export default function Consultation() {
     setStatus("sending");
     try {
       await submitConsultation(form);
+      await sendConsultationEmail(settings.notifyEmail, form);
       setStatus("done");
       setForm(initialForm);
     } catch (err) {
@@ -62,6 +64,17 @@ export default function Consultation() {
                   onChange={handleChange}
                   placeholder="010-0000-0000"
                   required
+                />
+              </div>
+              <div className="form-field">
+                <label htmlFor="email">이메일 (선택)</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="example@email.com"
                 />
               </div>
               <div className="form-field">
