@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
-import { useSiteImageMeta } from "../../hooks/useSiteImages";
+import { useSiteImage, useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
 import MapLink from "../../components/public/MapLink";
 import "./ContentPage.css";
@@ -8,6 +8,7 @@ import "./ContentPage.css";
 export default function Location() {
   const { settings } = useSettings();
   const banner = useSiteImageMeta("banner_location");
+  const mapImage = useSiteImage("map");
 
   return (
     <>
@@ -15,7 +16,7 @@ export default function Location() {
       <section className="content-body">
         <div className="container">
           <div style={{ marginBottom: 30 }}>
-            <MapLink url={settings.mapUrl} address={settings.address} height={360} />
+            <MapLink url={settings.mapUrl} address={settings.address} image={mapImage} height={360} />
           </div>
           <div className="content-body__text">
             <p>

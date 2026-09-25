@@ -26,6 +26,27 @@ a.map-link:hover {
   box-shadow: var(--shadow);
 }
 
+/* 지도 사진: 원본 비율 그대로 표시하고 버튼을 아래쪽에 겹친다 */
+.map-link--image {
+  position: relative;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+
+.map-link__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.map-link__cta--overlay {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
 .map-link--empty {
   color: var(--text-soft);
   font-weight: 700;

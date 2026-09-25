@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
 import { listServices, listNotices } from "../../api/content";
-import { useSiteImageMeta } from "../../hooks/useSiteImages";
+import { useSiteImage, useSiteImageMeta } from "../../hooks/useSiteImages";
 import HeroBg from "../../components/public/HeroBg";
 import MapLink from "../../components/public/MapLink";
 import "./Home.css";
@@ -10,6 +10,7 @@ import "./Home.css";
 export default function Home() {
   const { settings } = useSettings();
   const heroImage = useSiteImageMeta("hero");
+  const mapImage = useSiteImage("map");
   const [services, setServices] = useState([]);
   const [notices, setNotices] = useState([]);
 
@@ -118,7 +119,7 @@ export default function Home() {
               <p>{settings.address}</p>
             </div>
           </div>
-          <MapLink url={settings.mapUrl} address={settings.address} />
+          <MapLink url={settings.mapUrl} address={settings.address} image={mapImage} />
         </div>
       </section>
 
