@@ -158,23 +158,6 @@
   margin-bottom: 4px;
 }
 
-.home-contact__map-placeholder {
-  height: 320px;
-  border-radius: var(--radius);
-  background: repeating-linear-gradient(
-    45deg,
-    var(--line),
-    var(--line) 10px,
-    var(--surface-light) 10px,
-    var(--surface-light) 20px
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-soft);
-  font-weight: 700;
-}
-
 .home-notices {
   padding: 60px 0 100px;
 }

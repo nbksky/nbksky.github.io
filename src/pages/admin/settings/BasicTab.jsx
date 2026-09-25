@@ -8,6 +8,11 @@ const FIELDS = [
   { name: "repName", label: "대표자명", type: "input" },
   { name: "phone", label: "전화번호", type: "input" },
   { name: "address", label: "주소", type: "input" },
+  {
+    name: "mapUrl",
+    label: "네이버 지도 링크 (네이버 지도에서 장소 검색 → 공유 → 링크 복사 후 붙여넣기)",
+    type: "input",
+  },
   { name: "heroTitle", label: "메인 히어로 제목 (줄바꿈 가능)", type: "textarea" },
   { name: "heroSubtitle", label: "메인 히어로 부제목", type: "textarea" },
   { name: "introTitle", label: "소개 영상 섹션 제목 (줄바꿈 가능)", type: "textarea" },

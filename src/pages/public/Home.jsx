@@ -4,6 +4,7 @@ import { useSettings } from "../../contexts/SettingsContext";
 import { listServices, listNotices } from "../../api/content";
 import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import HeroBg from "../../components/public/HeroBg";
+import MapLink from "../../components/public/MapLink";
 import "./Home.css";
 
 export default function Home() {
@@ -117,7 +118,7 @@ export default function Home() {
               <p>{settings.address}</p>
             </div>
           </div>
-          <div className="home-contact__map-placeholder">지도 영역 (관리자 설정 예정)</div>
+          <MapLink url={settings.mapUrl} address={settings.address} />
         </div>
       </section>
 

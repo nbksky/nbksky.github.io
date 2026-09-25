@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
 import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
+import MapLink from "../../components/public/MapLink";
 import "./ContentPage.css";
 
 export default function Location() {
@@ -13,21 +14,8 @@ export default function Location() {
       <PageHero title="오시는 길" subtitle={settings.address} image={banner} />
       <section className="content-body">
         <div className="container">
-          <div
-            style={{
-              height: 360,
-              borderRadius: "var(--radius)",
-              background:
-                "repeating-linear-gradient(45deg, #eee0d0, #eee0d0 10px, #f5ece1 10px, #f5ece1 20px)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--text-soft)",
-              fontWeight: 700,
-              marginBottom: 30,
-            }}
-          >
-            지도 영역 (관리자 설정 예정)
+          <div style={{ marginBottom: 30 }}>
+            <MapLink url={settings.mapUrl} address={settings.address} height={360} />
           </div>
           <div className="content-body__text">
             <p>

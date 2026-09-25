@@ -28,6 +28,7 @@ export const defaultSettings = {
     "나만의 개인 맞춤 상담으로 여러분의 고민에 대해\n쉽고 자세하게 설명해드립니다.",
   aboutText: "사무소 소개 내용을 관리자 페이지에서 입력해주세요.",
   videoUrl: "",
+  mapUrl: "",
 };
 
 // ---------- Settings ----------
