@@ -11,6 +11,18 @@
   font-size: 12px;
 }
 
+.hero-editor__recommend {
+  max-width: 620px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  color: var(--primary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .hero-editor__toolbar {
   display: flex;
   align-items: center;

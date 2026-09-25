@@ -10,6 +10,12 @@ const ASPECTS = {
   banner: { desktop: 5, mobile: 1.3 },
 };
 
+const RECOMMEND = {
+  hero: "권장 사이즈: 가로 1600px × 세로 470px (약 3.4:1). 인물은 사진 가운데~왼쪽에 두고 위아래에 여백을 남겨주세요. 화면 크기에 따라 가장자리가 조금 잘릴 수 있으니 아래 미리보기(데스크톱/모바일)로 확인하세요. 가로 1600px보다 큰 사진은 자동으로 줄여서 저장됩니다.",
+  banner:
+    "권장 사이즈: 가로 1600px × 세로 320px (5:1). 중요한 내용은 사진 가운데 가로 띠 안에 두세요. 화면 크기에 따라 위아래가 잘릴 수 있으며, 가로 1600px보다 큰 사진은 자동으로 줄여서 저장됩니다.",
+};
+
 export default function HeroImageEditor({
   label,
   hint,
@@ -50,6 +56,7 @@ export default function HeroImageEditor({
     <div className="form-field">
       <label>{label}</label>
       {hint && <p className="hero-editor__hint">{hint}</p>}
+      <p className="hero-editor__recommend">{RECOMMEND[kind]}</p>
 
       <div className="hero-editor">
         <div className="hero-editor__toolbar">

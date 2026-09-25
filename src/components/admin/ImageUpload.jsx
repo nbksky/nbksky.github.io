@@ -2,7 +2,16 @@ import { useRef, useState } from "react";
 import { resizeImage } from "../../utils/image";
 import "./ImageUpload.css";
 
-export default function ImageUpload({ label, hint, value, onChange, maxWidth, maxBytes, aspect }) {
+export default function ImageUpload({
+  label,
+  hint,
+  recommend = "권장 사이즈: 가로 1200px 이상, 비율 자유 (사진 전체가 잘리지 않고 표시됩니다). 가로 1200px보다 큰 사진은 자동으로 줄여서 저장됩니다.",
+  value,
+  onChange,
+  maxWidth,
+  maxBytes,
+  aspect,
+}) {
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -27,6 +36,7 @@ export default function ImageUpload({ label, hint, value, onChange, maxWidth, ma
     <div className="form-field">
       <label>{label}</label>
       {hint && <p className="image-upload__hint">{hint}</p>}
+      {recommend && <p className="image-upload__recommend">{recommend}</p>}
       <div className="image-upload">
         {value ? (
           <img src={value} alt="" className="image-upload__preview" style={previewStyle} />

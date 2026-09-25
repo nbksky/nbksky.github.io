@@ -47,6 +47,16 @@
   font-size: 12px;
 }
 
+.image-upload__recommend {
+  padding: 8px 12px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  color: var(--primary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .image-upload__error {
   color: #c0392b;
   font-size: 13px;
