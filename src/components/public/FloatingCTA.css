@@ -7,11 +7,11 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  background: var(--orange-500);
+  background: var(--accent);
   color: var(--white);
   padding: 16px 14px;
   border-radius: 16px;
-  box-shadow: 0 12px 24px rgba(226, 137, 47, 0.35);
+  box-shadow: 0 12px 24px rgba(var(--accent-rgb), 0.35);
   text-align: center;
   transition: transform 0.15s ease;
 }
@@ -25,8 +25,9 @@
 }
 
 .floating-cta__text {
-  font-size: 12px;
-  font-weight: 700;
+  font-family: var(--ff-button);
+  font-size: calc(var(--fz-button) * 0.8);
+  font-weight: var(--fw-button);
   line-height: 1.3;
 }
 

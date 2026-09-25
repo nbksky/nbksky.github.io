@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
 import { listServices, listNotices } from "../../api/content";
+import { useSiteImage } from "../../hooks/useSiteImages";
 import "./Home.css";
 
 export default function Home() {
   const { settings } = useSettings();
+  const heroImage = useSiteImage("hero");
   const [services, setServices] = useState([]);
   const [notices, setNotices] = useState([]);
 
@@ -16,9 +18,12 @@ export default function Home() {
 
   return (
     <>
-      <section className="home-hero">
+      <section
+        className={`home-hero ${heroImage ? "home-hero--image" : ""}`}
+        style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
+      >
         <div className="container home-hero__inner">
-          <p className="section-eyebrow" style={{ color: "var(--orange-400)" }}>
+          <p className="section-eyebrow" style={{ color: "var(--accent-hover)" }}>
             {settings.repName}
           </p>
           <h1>
@@ -83,9 +88,10 @@ export default function Home() {
                   key={s.id}
                   className="home-service-card"
                   style={{
-                    background: idx % 2 === 0 ? "var(--brown-900)" : "var(--orange-500)",
+                    background: idx % 2 === 0 ? "var(--primary)" : "var(--accent)",
                   }}
                 >
+                  {s.image && <img src={s.image} alt="" className="home-service-card__img" />}
                   <h3>{s.title}</h3>
                   <p>{s.summary}</p>
                   <span className="home-service-card__more">자세히 보기 →</span>

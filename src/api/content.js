@@ -12,6 +12,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { mergeAppearance } from "../theme";
 
 const SETTINGS_DOC = "settings/site";
 
@@ -41,6 +42,38 @@ export async function saveSettings(data) {
   await setDoc(doc(db, SETTINGS_DOC), data, { merge: true });
 }
 
+// ---------- Appearance (테마 색상 / 글꼴) ----------
+export async function getAppearance() {
+  if (!db) return mergeAppearance(null);
+  const snap = await getDoc(doc(db, "settings/appearance"));
+  return mergeAppearance(snap.exists() ? snap.data() : null);
+}
+
+export async function saveAppearance(appearance) {
+  await setDoc(doc(db, "settings/appearance"), appearance);
+}
+
+// ---------- 사이트 이미지 ----------
+// Firestore 문서 1MB 제한 때문에 사진 1장을 문서 1개(settings/img_<key>)로 저장하고 필요한 페이지에서만 읽는다.
+// key: hero, about, banner_about, banner_location, banner_services, banner_notices, banner_consultation, service_<id>
+const imageCache = new Map();
+
+export async function getSiteImage(key) {
+  if (!db) return "";
+  if (imageCache.has(key)) return imageCache.get(key);
+  const snap = await getDoc(doc(db, `settings/img_${key}`));
+  const url = snap.exists() ? snap.data().dataUrl || "" : "";
+  imageCache.set(key, url);
+  return url;
+}
+
+export async function saveSiteImage(key, dataUrl) {
+  const ref = doc(db, `settings/img_${key}`);
+  if (dataUrl) await setDoc(ref, { dataUrl });
+  else await deleteDoc(ref);
+  imageCache.set(key, dataUrl || "");
+}
+
 // ---------- Services (업무 분야) ----------
 export async function listServices() {
   if (!db) return [];
@@ -64,7 +97,8 @@ export async function updateService(id, data) {
 }
 
 export async function deleteService(id) {
-  return deleteDoc(doc(db, "services", id));
+  await deleteDoc(doc(db, "services", id));
+  await saveSiteImage(`service_${id}`, "");
 }
 
 // ---------- Notices (공지사항) ----------

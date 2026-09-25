@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listNotices } from "../../api/content";
+import { useSiteImage } from "../../hooks/useSiteImages";
+import PageHero from "../../components/public/PageHero";
 import "./NoticeList.css";
 
 function formatDate(ts) {
@@ -10,6 +12,7 @@ function formatDate(ts) {
 
 export default function NoticeList() {
   const [notices, setNotices] = useState(null);
+  const banner = useSiteImage("banner_notices");
 
   useEffect(() => {
     listNotices().then(setNotices).catch(() => setNotices([]));
@@ -17,12 +20,7 @@ export default function NoticeList() {
 
   return (
     <>
-      <section className="page-hero">
-        <div className="container">
-          <h1>공지사항</h1>
-          <p>소식과 안내사항을 확인하세요.</p>
-        </div>
-      </section>
+      <PageHero title="공지사항" subtitle="소식과 안내사항을 확인하세요." image={banner} />
       <section className="notice-list">
         <div className="container">
           {notices === null ? (

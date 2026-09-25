@@ -1,18 +1,16 @@
 import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
+import { useSiteImage } from "../../hooks/useSiteImages";
+import PageHero from "../../components/public/PageHero";
 import "./ContentPage.css";
 
 export default function Location() {
   const { settings } = useSettings();
+  const banner = useSiteImage("banner_location");
 
   return (
     <>
-      <section className="page-hero">
-        <div className="container">
-          <h1>오시는 길</h1>
-          <p>{settings.address}</p>
-        </div>
-      </section>
+      <PageHero title="오시는 길" subtitle={settings.address} image={banner} />
       <section className="content-body">
         <div className="container">
           <div
@@ -24,7 +22,7 @@ export default function Location() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "var(--ink-soft)",
+              color: "var(--text-soft)",
               fontWeight: 700,
               marginBottom: 30,
             }}

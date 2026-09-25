@@ -3,7 +3,7 @@
 }
 
 .notice-list__ul {
-  border-top: 2px solid var(--brown-900);
+  border-top: 2px solid var(--primary);
 }
 
 .notice-list__ul li {
@@ -19,18 +19,20 @@
 }
 
 .notice-list__ul a:hover .notice-list__title {
-  color: var(--orange-500);
+  color: var(--accent);
 }
 
 .notice-list__title {
+  font-family: var(--ff-card);
+  font-size: calc(var(--fz-card) * 0.85);
   font-weight: 600;
 }
 
 .notice-list__title em {
   font-style: normal;
-  background: var(--orange-100);
-  color: var(--orange-500);
-  font-size: 11px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: calc(var(--fz-caption) * 0.8);
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 999px;
@@ -38,7 +40,7 @@
 }
 
 .notice-list__date {
-  color: var(--ink-soft);
-  font-size: 13px;
+  color: var(--text-soft);
+  font-size: var(--fz-caption);
   white-space: nowrap;
 }

@@ -1,0 +1,53 @@
+.image-upload {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.image-upload__preview,
+.image-upload__empty {
+  width: 180px;
+  height: 120px;
+  border-radius: 8px;
+  border: 1.5px solid var(--line);
+  object-fit: cover;
+  background: var(--surface);
+}
+
+.image-upload__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
+.image-upload__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.image-upload__actions .btn {
+  padding: 10px 18px;
+  font-size: 13px;
+}
+
+.image-upload__remove {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.image-upload__hint {
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
+.image-upload__error {
+  color: #c0392b;
+  font-size: 13px;
+}

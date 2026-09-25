@@ -1,17 +1,26 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { defaultSettings, getSettings } from "../api/content";
+import { defaultSettings, getAppearance, getSettings } from "../api/content";
+import { DEFAULT_APPEARANCE, cacheAppearance, ensureFonts, loadCachedAppearance } from "../theme";
 
-const SettingsContext = createContext({ settings: defaultSettings, loading: true, refresh: () => {} });
+const SettingsContext = createContext({
+  settings: defaultSettings,
+  appearance: DEFAULT_APPEARANCE,
+  loading: true,
+  refresh: () => {},
+});
 
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(defaultSettings);
+  const [appearance, setAppearance] = useState(loadCachedAppearance);
   const [loading, setLoading] = useState(true);
 
   const refresh = async () => {
     setLoading(true);
     try {
-      const data = await getSettings();
-      setSettings(data);
+      const [site, look] = await Promise.all([getSettings(), getAppearance()]);
+      setSettings(site);
+      setAppearance(look);
+      cacheAppearance(look);
     } finally {
       setLoading(false);
     }
@@ -21,8 +30,12 @@ export function SettingsProvider({ children }) {
     refresh();
   }, []);
 
+  useEffect(() => {
+    ensureFonts(appearance);
+  }, [appearance]);
+
   return (
-    <SettingsContext.Provider value={{ settings, loading, refresh }}>
+    <SettingsContext.Provider value={{ settings, appearance, loading, refresh }}>
       {children}
     </SettingsContext.Provider>
   );

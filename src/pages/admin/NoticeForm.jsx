@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createNotice, getNotice, updateNotice } from "../../api/content";
+import ImageUpload from "../../components/admin/ImageUpload";
 
 export default function NoticeForm() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
-  const [form, setForm] = useState({ title: "", content: "", pinned: false });
+  const [form, setForm] = useState({ title: "", content: "", pinned: false, image: "" });
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!isEdit) return;
     getNotice(id).then((data) => {
-      if (data) setForm({ title: data.title, content: data.content, pinned: Boolean(data.pinned) });
+      if (data) {
+        setForm({
+          title: data.title,
+          content: data.content,
+          pinned: Boolean(data.pinned),
+          image: data.image || "",
+        });
+      }
       setLoading(false);
     });
   }, [id, isEdit]);
@@ -59,6 +67,11 @@ export default function NoticeForm() {
             required
           />
         </div>
+        <ImageUpload
+          label="첨부 사진 (선택)"
+          value={form.image}
+          onChange={(image) => setForm((f) => ({ ...f, image }))}
+        />
         <div className="form-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <input
             id="pinned"

@@ -1,20 +1,33 @@
 .home-hero {
-  background: radial-gradient(circle at 80% 20%, #3a2f28, var(--brown-950) 65%);
+  background: radial-gradient(circle at 80% 20%, var(--primary-light), var(--primary-dark) 65%);
   color: var(--white);
   padding: 120px 0 100px;
 }
 
+/* 메인 이미지는 오버레이 없이 그대로 표시 */
+.home-hero--image {
+  background-size: cover;
+  background-position: center;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+}
+
+.home-hero--image .home-hero__inner {
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
 .home-hero__inner h1 {
-  font-size: 42px;
-  font-weight: 900;
+  font-family: var(--ff-hero);
+  font-size: var(--fz-hero);
+  font-weight: var(--fw-hero);
   line-height: 1.35;
   margin-top: 6px;
 }
 
 .home-hero__subtitle {
   margin-top: 18px;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
   max-width: 520px;
 }
 
@@ -27,7 +40,7 @@
 
 .home-video {
   padding: 90px 0;
-  background: var(--cream-50);
+  background: var(--surface-light);
 }
 
 .home-video__inner {
@@ -39,7 +52,7 @@
 
 .home-video__desc {
   margin-top: 16px;
-  color: var(--ink-soft);
+  color: var(--text-soft);
   white-space: pre-line;
 }
 
@@ -83,24 +96,35 @@
   box-shadow: var(--shadow);
 }
 
+.home-service-card__img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
 .home-service-card h3 {
-  font-size: 20px;
-  font-weight: 900;
+  font-family: var(--ff-card);
+  font-size: var(--fz-card);
+  font-weight: var(--fw-card);
 }
 
 .home-service-card p {
-  font-size: 14px;
+  font-family: var(--ff-caption);
+  font-size: var(--fz-caption);
+  font-weight: var(--fw-caption);
   color: rgba(255, 255, 255, 0.85);
   flex: 1;
 }
 
 .home-service-card__more {
-  font-size: 13px;
+  font-size: var(--fz-caption);
   font-weight: 700;
 }
 
 .home-contact {
-  background: var(--cream-100);
+  background: var(--surface);
   padding: 90px 0;
 }
 
@@ -113,7 +137,7 @@
 
 .home-contact__desc {
   margin-top: 16px;
-  color: var(--ink-soft);
+  color: var(--text-soft);
   max-width: 460px;
 }
 
@@ -124,7 +148,7 @@
 .home-contact__info {
   margin-top: 26px;
   font-weight: 700;
-  color: var(--brown-900);
+  color: var(--primary);
 }
 
 .home-contact__info p {
@@ -136,15 +160,15 @@
   border-radius: var(--radius);
   background: repeating-linear-gradient(
     45deg,
-    #eee0d0,
-    #eee0d0 10px,
-    #f5ece1 10px,
-    #f5ece1 20px
+    var(--line),
+    var(--line) 10px,
+    var(--surface-light) 10px,
+    var(--surface-light) 20px
   );
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink-soft);
+  color: var(--text-soft);
   font-weight: 700;
 }
 
@@ -168,15 +192,15 @@
 }
 
 .home-notices__list a:hover {
-  color: var(--orange-500);
+  color: var(--accent);
 }
 
 @media (max-width: 860px) {
   .home-hero {
     padding: 90px 0 70px;
   }
-  .home-hero__inner h1 {
-    font-size: 30px;
+  .home-hero--image {
+    min-height: 420px;
   }
   .home-video__inner,
   .home-contact__inner {

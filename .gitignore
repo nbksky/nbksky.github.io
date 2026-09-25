@@ -25,3 +25,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Firebase 콘솔에서 복사해 둔 설정 메모
+*firebase env*.txt

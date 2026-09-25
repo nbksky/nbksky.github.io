@@ -1,13 +1,13 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background: var(--cream-50);
+  background: var(--surface-light);
 }
 
 .admin-sidebar {
   width: 230px;
   flex-shrink: 0;
-  background: var(--brown-950);
+  background: var(--primary-dark);
   color: var(--white);
   display: flex;
   flex-direction: column;
@@ -40,7 +40,7 @@
 .admin-sidebar nav a:hover {
   color: var(--white);
   background: rgba(255, 255, 255, 0.06);
-  border-left-color: var(--orange-500);
+  border-left-color: var(--accent);
 }
 
 .admin-sidebar__footer {
@@ -72,13 +72,14 @@
 .admin-content {
   flex: 1;
   padding: 36px 44px;
-  max-width: 980px;
+  max-width: 1240px;
+  min-width: 0;
 }
 
 .admin-content h1 {
   font-size: 24px;
   font-weight: 900;
-  color: var(--brown-900);
+  color: var(--primary);
   margin-bottom: 24px;
 }
 
@@ -111,7 +112,7 @@
 }
 
 .admin-table th {
-  color: var(--ink-soft);
+  color: var(--text-soft);
   font-weight: 700;
   font-size: 13px;
 }
@@ -132,8 +133,8 @@
 
 .admin-row-actions button:hover,
 .admin-row-actions a:hover {
-  border-color: var(--orange-500);
-  color: var(--orange-500);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .admin-badge {
@@ -145,11 +146,11 @@
 }
 
 .admin-badge--new {
-  background: var(--orange-100);
-  color: var(--orange-500);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .admin-badge--read {
   background: var(--line);
-  color: var(--ink-soft);
+  color: var(--text-soft);
 }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getNotice } from "../../api/content";
+import { useSiteImage } from "../../hooks/useSiteImages";
+import PageHero from "../../components/public/PageHero";
 import "./ContentPage.css";
 
 function formatDate(ts) {
@@ -11,6 +13,7 @@ function formatDate(ts) {
 export default function NoticeDetail() {
   const { id } = useParams();
   const [notice, setNotice] = useState(undefined);
+  const banner = useSiteImage("banner_notices");
 
   useEffect(() => {
     getNotice(id).then(setNotice).catch(() => setNotice(null));
@@ -35,14 +38,10 @@ export default function NoticeDetail() {
 
   return (
     <>
-      <section className="page-hero">
-        <div className="container">
-          <h1>{notice.title}</h1>
-          <p>{formatDate(notice.createdAt)}</p>
-        </div>
-      </section>
+      <PageHero title={notice.title} subtitle={formatDate(notice.createdAt)} image={banner} />
       <section className="content-body">
         <div className="container">
+          {notice.image && <img src={notice.image} alt="" className="content-body__image" />}
           <div className="content-body__text">{notice.content}</div>
           <div style={{ marginTop: 40 }}>
             <Link to="/notices" className="btn btn-dark">

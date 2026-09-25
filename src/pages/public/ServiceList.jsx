@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listServices } from "../../api/content";
+import { useSiteImage } from "../../hooks/useSiteImages";
+import PageHero from "../../components/public/PageHero";
 import "./ServiceList.css";
 
 export default function ServiceList() {
   const [services, setServices] = useState(null);
+  const banner = useSiteImage("banner_services");
 
   useEffect(() => {
     listServices().then(setServices).catch(() => setServices([]));
@@ -12,12 +15,7 @@ export default function ServiceList() {
 
   return (
     <>
-      <section className="page-hero">
-        <div className="container">
-          <h1>업무 분야</h1>
-          <p>전문 분야별 상담을 안내해드립니다.</p>
-        </div>
-      </section>
+      <PageHero title="업무 분야" subtitle="전문 분야별 상담을 안내해드립니다." image={banner} />
       <section className="service-list">
         <div className="container">
           {services === null ? (
@@ -28,6 +26,7 @@ export default function ServiceList() {
             <div className="service-list__grid">
               {services.map((s) => (
                 <Link to={`/services/${s.id}`} key={s.id} className="service-list__card">
+                  {s.image && <img src={s.image} alt="" className="service-list__img" />}
                   <h3>{s.title}</h3>
                   <p>{s.summary}</p>
                   <span>자세히 보기 →</span>

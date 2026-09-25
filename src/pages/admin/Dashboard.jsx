@@ -32,29 +32,29 @@ export default function Dashboard() {
           }}
         >
           <Link to="/admin/consultations" className="admin-panel">
-            <p style={{ color: "var(--ink-soft)", fontSize: 13, marginBottom: 8 }}>
+            <p style={{ color: "var(--text-soft)", fontSize: 13, marginBottom: 8 }}>
               신규 상담신청
             </p>
-            <p style={{ fontSize: 30, fontWeight: 900, color: "var(--orange-500)" }}>
+            <p style={{ fontSize: 30, fontWeight: 900, color: "var(--accent)" }}>
               {counts.newConsultations}
             </p>
-            <p style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 4 }}>
+            <p style={{ fontSize: 12, color: "var(--text-soft)", marginTop: 4 }}>
               전체 {counts.totalConsultations}건
             </p>
           </Link>
           <Link to="/admin/notices" className="admin-panel">
-            <p style={{ color: "var(--ink-soft)", fontSize: 13, marginBottom: 8 }}>
+            <p style={{ color: "var(--text-soft)", fontSize: 13, marginBottom: 8 }}>
               공지사항
             </p>
-            <p style={{ fontSize: 30, fontWeight: 900, color: "var(--brown-900)" }}>
+            <p style={{ fontSize: 30, fontWeight: 900, color: "var(--primary)" }}>
               {counts.notices}
             </p>
           </Link>
           <Link to="/admin/services" className="admin-panel">
-            <p style={{ color: "var(--ink-soft)", fontSize: 13, marginBottom: 8 }}>
+            <p style={{ color: "var(--text-soft)", fontSize: 13, marginBottom: 8 }}>
               업무 분야
             </p>
-            <p style={{ fontSize: 30, fontWeight: 900, color: "var(--brown-900)" }}>
+            <p style={{ fontSize: 30, fontWeight: 900, color: "var(--primary)" }}>
               {counts.services}
             </p>
           </Link>

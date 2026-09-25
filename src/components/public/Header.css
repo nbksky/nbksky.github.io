@@ -15,9 +15,10 @@
 }
 
 .site-header__logo {
-  font-size: 19px;
-  font-weight: 900;
-  color: var(--brown-900);
+  font-family: var(--ff-card);
+  font-size: var(--fz-card);
+  font-weight: var(--fw-card);
+  color: var(--primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -30,17 +31,18 @@
 }
 
 .site-header__nav a {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--brown-900);
+  font-family: var(--ff-menu);
+  font-size: var(--fz-menu);
+  font-weight: var(--fw-menu);
+  color: var(--primary);
   padding: 6px 2px;
   border-bottom: 2px solid transparent;
 }
 
 .site-header__nav a.active,
 .site-header__nav a:hover {
-  color: var(--orange-500);
-  border-bottom-color: var(--orange-500);
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .site-header__toggle {
@@ -55,7 +57,7 @@
 .site-header__toggle span {
   width: 22px;
   height: 2px;
-  background: var(--brown-900);
+  background: var(--primary);
   display: block;
 }
 

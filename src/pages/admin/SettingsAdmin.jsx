@@ -1,76 +1,88 @@
 import { useEffect, useState } from "react";
-import { getSettings, saveSettings } from "../../api/content";
+import { getAppearance, saveAppearance } from "../../api/content";
+import { useSettings } from "../../contexts/SettingsContext";
+import BasicTab from "./settings/BasicTab";
+import ColorsTab from "./settings/ColorsTab";
+import FontsTab from "./settings/FontsTab";
+import ImagesTab from "./settings/ImagesTab";
+import "./settings/SettingsTabs.css";
 
-const FIELDS = [
-  { name: "officeName", label: "사무소명", type: "input" },
-  { name: "repName", label: "대표자명", type: "input" },
-  { name: "phone", label: "전화번호", type: "input" },
-  { name: "address", label: "주소", type: "input" },
-  { name: "heroTitle", label: "메인 히어로 제목 (줄바꿈 가능)", type: "textarea" },
-  { name: "heroSubtitle", label: "메인 히어로 부제목", type: "textarea" },
-  { name: "introTitle", label: "소개 영상 섹션 제목 (줄바꿈 가능)", type: "textarea" },
-  { name: "introText", label: "소개 영상 섹션 설명", type: "textarea" },
-  { name: "videoUrl", label: "소개 영상 URL (유튜브 embed 링크)", type: "input" },
-  { name: "aboutText", label: "사무소 소개 페이지 본문", type: "textarea", rows: 10 },
+const TABS = [
+  { id: "basic", label: "기본정보/문구" },
+  { id: "colors", label: "테마 색상" },
+  { id: "images", label: "페이지 이미지" },
+  { id: "fonts", label: "글꼴" },
 ];
 
 export default function SettingsAdmin() {
-  const [form, setForm] = useState(null);
+  const { refresh } = useSettings();
+  const [tab, setTab] = useState("basic");
+  const [appearance, setAppearance] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    getSettings().then(setForm);
+    getAppearance().then(setAppearance);
   }, []);
 
-  const handleChange = (e) => {
-    setSaved(false);
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = (next) => {
+    setMessage("");
+    setAppearance(next);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSave = async () => {
     setSaving(true);
+    setMessage("");
+    setError("");
     try {
-      await saveSettings(form);
-      setSaved(true);
+      await saveAppearance(appearance);
+      await refresh();
+      setMessage("저장되었습니다");
+    } catch {
+      setError("저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
       setSaving(false);
     }
   };
 
-  if (!form) return <p className="state-msg">불러오는 중...</p>;
+  const isAppearanceTab = tab === "colors" || tab === "fonts";
 
   return (
     <div>
       <h1>메인페이지 설정</h1>
-      <form className="admin-panel" onSubmit={handleSubmit}>
-        {FIELDS.map((field) => (
-          <div className="form-field" key={field.name}>
-            <label htmlFor={field.name}>{field.label}</label>
-            {field.type === "textarea" ? (
-              <textarea
-                id={field.name}
-                name={field.name}
-                rows={field.rows || 3}
-                value={form[field.name] || ""}
-                onChange={handleChange}
-              />
-            ) : (
-              <input
-                id={field.name}
-                name={field.name}
-                value={form[field.name] || ""}
-                onChange={handleChange}
-              />
-            )}
-          </div>
+      <div className="settings-tabs" role="tablist">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            className={tab === t.id ? "is-active" : ""}
+            onClick={() => setTab(t.id)}
+          >
+            {t.label}
+          </button>
         ))}
-        <button type="submit" className="btn btn-primary" disabled={saving}>
-          {saving ? "저장 중..." : "저장"}
-        </button>
-        {saved && <span style={{ marginLeft: 14, color: "var(--orange-500)", fontWeight: 700 }}>저장되었습니다</span>}
-      </form>
+      </div>
+
+      <div className="admin-panel">
+        {tab === "basic" && <BasicTab />}
+        {tab === "images" && <ImagesTab />}
+        {isAppearanceTab && !appearance && <p className="state-msg">불러오는 중...</p>}
+        {tab === "colors" && appearance && <ColorsTab appearance={appearance} onChange={handleChange} />}
+        {tab === "fonts" && appearance && <FontsTab appearance={appearance} onChange={handleChange} />}
+
+        {isAppearanceTab && appearance && (
+          <div className="settings-savebar">
+            <button type="button" className="btn btn-primary" disabled={saving} onClick={handleSave}>
+              {saving ? "저장 중..." : "저장"}
+            </button>
+            {message && <span className="settings-savebar__msg">{message}</span>}
+            {error && <span className="settings-savebar__err">{error}</span>}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

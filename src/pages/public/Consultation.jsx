@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useSettings } from "../../contexts/SettingsContext";
 import { submitConsultation } from "../../api/content";
 import { firebaseReady } from "../../firebase";
+import { useSiteImage } from "../../hooks/useSiteImages";
+import PageHero from "../../components/public/PageHero";
 import "./ContentPage.css";
 
 const initialForm = { name: "", phone: "", message: "" };
@@ -10,6 +12,7 @@ export default function Consultation() {
   const { settings } = useSettings();
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
+  const banner = useSiteImage("banner_consultation");
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -31,12 +34,7 @@ export default function Consultation() {
 
   return (
     <>
-      <section className="page-hero">
-        <div className="container">
-          <h1>상담 신청하기</h1>
-          <p>{settings.heroSubtitle}</p>
-        </div>
-      </section>
+      <PageHero title="상담 신청하기" subtitle={settings.heroSubtitle} image={banner} />
 
       <section className="content-body">
         <div className="container" style={{ maxWidth: 640 }}>
