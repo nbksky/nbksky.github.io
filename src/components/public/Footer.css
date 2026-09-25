@@ -1,0 +1,31 @@
+.site-footer {
+  background: var(--brown-950);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 30px 0;
+  margin-top: auto;
+}
+
+.site-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.site-footer__logo {
+  color: var(--white);
+  font-weight: 900;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.site-footer__links a {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+}
+
+.site-footer__links a:hover {
+  color: var(--orange-400);
+}

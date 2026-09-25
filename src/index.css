@@ -1,0 +1,193 @@
+:root {
+  --brown-950: #1f1a17;
+  --brown-900: #2a2320;
+  --brown-800: #3a3128;
+  --orange-500: #e2892f;
+  --orange-400: #ef9f47;
+  --orange-100: #fdece0;
+  --cream-100: #f7f3ee;
+  --cream-50: #fbf9f6;
+  --ink: #2a2320;
+  --ink-soft: #6b6058;
+  --line: #e7ded4;
+  --white: #ffffff;
+  --radius: 10px;
+  --shadow: 0 10px 30px rgba(42, 35, 32, 0.08);
+  --font-sans: "Noto Sans KR", "Malgun Gothic", -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--orange-500);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: var(--orange-400);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--white);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-dark {
+  background: var(--brown-900);
+  color: var(--white);
+}
+
+.btn-dark:hover {
+  background: var(--brown-800);
+}
+
+.section-heading {
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--brown-900);
+  line-height: 1.35;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--orange-500);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.page-hero {
+  background: linear-gradient(135deg, var(--brown-950), var(--brown-900));
+  color: var(--white);
+  padding: 90px 0 60px;
+}
+
+.page-hero h1 {
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.page-hero p {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.state-msg {
+  padding: 60px 0;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.form-field label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brown-900);
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: var(--orange-500);
+}

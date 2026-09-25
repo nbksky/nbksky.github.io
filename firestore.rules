@@ -1,0 +1,33 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // 메인페이지 텍스트 설정: 누구나 읽기, 로그인한 관리자만 쓰기
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 업무 분야: 누구나 읽기, 관리자만 쓰기
+    match /services/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 공지사항: 누구나 읽기, 관리자만 쓰기
+    match /notices/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 상담신청: 누구나 접수(생성) 가능, 조회/수정/삭제는 관리자만
+    match /consultations/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

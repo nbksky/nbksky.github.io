@@ -1,0 +1,42 @@
+.service-list {
+  padding: 70px 0 100px;
+}
+
+.service-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.service-list__card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.service-list__card:hover {
+  border-color: var(--orange-500);
+  transform: translateY(-3px);
+}
+
+.service-list__card h3 {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--brown-900);
+}
+
+.service-list__card p {
+  color: var(--ink-soft);
+  font-size: 14px;
+  flex: 1;
+}
+
+.service-list__card span {
+  color: var(--orange-500);
+  font-weight: 700;
+  font-size: 13px;
+}
