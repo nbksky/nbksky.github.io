@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
 import { listServices, listNotices } from "../../api/content";
-import { useSiteImage } from "../../hooks/useSiteImages";
+import { useSiteImageMeta } from "../../hooks/useSiteImages";
+import HeroBg from "../../components/public/HeroBg";
 import "./Home.css";
 
 export default function Home() {
   const { settings } = useSettings();
-  const heroImage = useSiteImage("hero");
+  const heroImage = useSiteImageMeta("hero");
   const [services, setServices] = useState([]);
   const [notices, setNotices] = useState([]);
 
@@ -18,10 +19,8 @@ export default function Home() {
 
   return (
     <>
-      <section
-        className={`home-hero ${heroImage ? "home-hero--image" : ""}`}
-        style={heroImage ? { "--hero-img": `url(${heroImage})` } : undefined}
-      >
+      <section className={`home-hero ${heroImage ? "home-hero--image" : ""}`}>
+        {heroImage && <HeroBg image={heroImage} />}
         <div className="container home-hero__inner">
           <p className="section-eyebrow" style={{ color: "var(--accent-hover)" }}>
             {settings.repName}

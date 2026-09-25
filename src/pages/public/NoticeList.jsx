@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listNotices } from "../../api/content";
-import { useSiteImage } from "../../hooks/useSiteImages";
+import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
 import "./NoticeList.css";
 
@@ -12,7 +12,7 @@ function formatDate(ts) {
 
 export default function NoticeList() {
   const [notices, setNotices] = useState(null);
-  const banner = useSiteImage("banner_notices");
+  const banner = useSiteImageMeta("banner_notices");
 
   useEffect(() => {
     listNotices().then(setNotices).catch(() => setNotices([]));

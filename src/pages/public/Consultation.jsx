@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSettings } from "../../contexts/SettingsContext";
 import { submitConsultation } from "../../api/content";
 import { firebaseReady } from "../../firebase";
-import { useSiteImage } from "../../hooks/useSiteImages";
+import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
 import "./ContentPage.css";
 
@@ -12,7 +12,7 @@ export default function Consultation() {
   const { settings } = useSettings();
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
-  const banner = useSiteImage("banner_consultation");
+  const banner = useSiteImageMeta("banner_consultation");
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));

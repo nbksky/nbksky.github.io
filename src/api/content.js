@@ -56,22 +56,39 @@ export async function saveAppearance(appearance) {
 // ---------- 사이트 이미지 ----------
 // Firestore 문서 1MB 제한 때문에 사진 1장을 문서 1개(settings/img_<key>)로 저장하고 필요한 페이지에서만 읽는다.
 // key: hero, about, banner_about, banner_location, banner_services, banner_notices, banner_consultation, service_<id>
+// 문서: { dataUrl, x, y, zoom } — x/y는 표시 위치(0~100%), zoom은 확대 배율(1~3). 없으면 가운데/1배.
 const imageCache = new Map();
 
-export async function getSiteImage(key) {
-  if (!db) return "";
+export const DEFAULT_IMAGE_ADJUST = { x: 50, y: 50, zoom: 1 };
+
+export async function getSiteImageMeta(key) {
+  if (!db) return null;
   if (imageCache.has(key)) return imageCache.get(key);
   const snap = await getDoc(doc(db, `settings/img_${key}`));
-  const url = snap.exists() ? snap.data().dataUrl || "" : "";
-  imageCache.set(key, url);
-  return url;
+  const data = snap.exists() ? snap.data() : null;
+  const meta = data?.dataUrl ? { ...DEFAULT_IMAGE_ADJUST, ...data } : null;
+  imageCache.set(key, meta);
+  return meta;
+}
+
+export async function getSiteImage(key) {
+  return (await getSiteImageMeta(key))?.dataUrl || "";
+}
+
+export async function saveSiteImageMeta(key, meta) {
+  const ref = doc(db, `settings/img_${key}`);
+  if (meta?.dataUrl) {
+    const { dataUrl, x, y, zoom } = { ...DEFAULT_IMAGE_ADJUST, ...meta };
+    await setDoc(ref, { dataUrl, x, y, zoom });
+    imageCache.set(key, { dataUrl, x, y, zoom });
+  } else {
+    await deleteDoc(ref);
+    imageCache.set(key, null);
+  }
 }
 
 export async function saveSiteImage(key, dataUrl) {
-  const ref = doc(db, `settings/img_${key}`);
-  if (dataUrl) await setDoc(ref, { dataUrl });
-  else await deleteDoc(ref);
-  imageCache.set(key, dataUrl || "");
+  await saveSiteImageMeta(key, dataUrl ? { dataUrl } : null);
 }
 
 // ---------- Services (업무 분야) ----------

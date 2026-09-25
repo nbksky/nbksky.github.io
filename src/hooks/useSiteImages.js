@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
-import { getSiteImage } from "../api/content";
+import { getSiteImageMeta } from "../api/content";
 
-export function useSiteImage(key) {
-  const [url, setUrl] = useState("");
+// { dataUrl, x, y, zoom } 또는 null
+export function useSiteImageMeta(key) {
+  const [meta, setMeta] = useState(null);
 
   useEffect(() => {
     if (!key) return;
     let alive = true;
-    getSiteImage(key)
-      .then((u) => alive && setUrl(u))
-      .catch(() => alive && setUrl(""));
+    getSiteImageMeta(key)
+      .then((m) => alive && setMeta(m))
+      .catch(() => alive && setMeta(null));
     return () => {
       alive = false;
     };
   }, [key]);
 
-  return key ? url : "";
+  return key ? meta : null;
+}
+
+export function useSiteImage(key) {
+  return useSiteImageMeta(key)?.dataUrl || "";
 }

@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getService } from "../../api/content";
-import { useSiteImage } from "../../hooks/useSiteImages";
+import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
 import "./ContentPage.css";
 
 export default function ServiceDetail() {
   const { id } = useParams();
   const [service, setService] = useState(undefined);
-  const ownBanner = useSiteImage(`service_${id}`);
-  const fallbackBanner = useSiteImage("banner_services");
+  const ownBanner = useSiteImageMeta(`service_${id}`);
+  const fallbackBanner = useSiteImageMeta("banner_services");
 
   useEffect(() => {
     getService(id).then(setService).catch(() => setService(null));

@@ -1,12 +1,12 @@
 import { useSettings } from "../../contexts/SettingsContext";
-import { useSiteImage } from "../../hooks/useSiteImages";
+import { useSiteImage, useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
 import "./ContentPage.css";
 
 export default function About() {
   const { settings } = useSettings();
   const aboutImage = useSiteImage("about");
-  const banner = useSiteImage("banner_about");
+  const banner = useSiteImageMeta("banner_about");
 
   return (
     <>

@@ -6,17 +6,17 @@
 
 /* 메인 이미지는 오버레이 없이 그대로 표시 */
 .home-hero--image {
-  /* 이미지 아래에 테마 그라데이션을 깔아 투명 배경 인물 사진에도 테마 색이 보이게 한다 */
-  background-image: var(--hero-img), radial-gradient(circle at 80% 20%, var(--primary-light), var(--primary-dark) 65%);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+  /* 배경 이미지(.hero-bg) 아래에 .home-hero의 테마 그라데이션이 깔려 투명 배경 인물 사진에도 테마 색이 보인다 */
+  position: relative;
+  overflow: hidden;
   min-height: 560px;
   display: flex;
   align-items: center;
 }
 
 .home-hero--image .home-hero__inner {
+  position: relative;
+  z-index: 2;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
 }
 

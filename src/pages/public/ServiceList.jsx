@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listServices } from "../../api/content";
-import { useSiteImage } from "../../hooks/useSiteImages";
+import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
 import "./ServiceList.css";
 
 export default function ServiceList() {
   const [services, setServices] = useState(null);
-  const banner = useSiteImage("banner_services");
+  const banner = useSiteImageMeta("banner_services");
 
   useEffect(() => {
     listServices().then(setServices).catch(() => setServices([]));

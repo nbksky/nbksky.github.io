@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { getSiteImage, saveSiteImage } from "../../../api/content";
+import { getSiteImageMeta, saveSiteImageMeta } from "../../../api/content";
 import ImageUpload from "../../../components/admin/ImageUpload";
+import HeroImageEditor from "../../../components/admin/HeroImageEditor";
 import "./SettingsTabs.css";
 
-const BANNER = { maxWidth: 1600, maxBytes: 200 * 1024, aspect: 4 };
+const BANNER = { kind: "banner", maxWidth: 1600, maxBytes: 200 * 1024 };
 
+// kind: hero/banner = 위치·확대 조절 가능한 배경 이미지, plain = 일반 사진
 const GROUPS = [
   {
     title: "메인 페이지",
@@ -12,8 +14,8 @@ const GROUPS = [
       {
         key: "hero",
         label: "메인 이미지",
-        hint: "오버레이 없이 원본 그대로 메인 상단에 표시됩니다.",
-        opts: { maxWidth: 1600, maxBytes: 300 * 1024 },
+        hint: "오버레이 없이 메인 상단 배경으로 표시됩니다. 배경 없는(투명) PNG는 테마 색 위에 올라갑니다.",
+        opts: { kind: "hero", maxWidth: 1600, maxBytes: 300 * 1024 },
       },
     ],
   },
@@ -34,7 +36,13 @@ const GROUPS = [
   },
   {
     title: "본문 사진",
-    slots: [{ key: "about", label: "사무소 소개 페이지 본문 사진", opts: { maxWidth: 1200 } }],
+    slots: [
+      {
+        key: "about",
+        label: "사무소 소개 페이지 본문 사진",
+        opts: { kind: "plain", maxWidth: 1200 },
+      },
+    ],
   },
 ];
 
@@ -47,8 +55,8 @@ export default function ImagesTab() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    Promise.all(ALL_KEYS.map((k) => getSiteImage(k))).then((urls) => {
-      const map = Object.fromEntries(ALL_KEYS.map((k, i) => [k, urls[i]]));
+    Promise.all(ALL_KEYS.map((k) => getSiteImageMeta(k))).then((metas) => {
+      const map = Object.fromEntries(ALL_KEYS.map((k, i) => [k, metas[i]]));
       setImages(map);
       setOriginal(map);
     });
@@ -59,7 +67,7 @@ export default function ImagesTab() {
     setMessage("");
     try {
       const changed = ALL_KEYS.filter((k) => images[k] !== original[k]);
-      await Promise.all(changed.map((k) => saveSiteImage(k, images[k])));
+      await Promise.all(changed.map((k) => saveSiteImageMeta(k, images[k])));
       setOriginal(images);
       setMessage(changed.length ? "저장되었습니다" : "변경된 사진이 없습니다");
     } catch {
@@ -71,24 +79,39 @@ export default function ImagesTab() {
 
   if (!images) return <p className="state-msg">불러오는 중...</p>;
 
+  const setImage = (key, meta) => {
+    setMessage("");
+    setImages((m) => ({ ...m, [key]: meta }));
+  };
+
   return (
     <div>
       {GROUPS.map((group) => (
         <div className="image-slot-group" key={group.title}>
           <h2>{group.title}</h2>
-          {group.slots.map((slot) => (
-            <ImageUpload
-              key={slot.key}
-              label={slot.label}
-              hint={slot.hint}
-              value={images[slot.key]}
-              onChange={(url) => {
-                setMessage("");
-                setImages((m) => ({ ...m, [slot.key]: url }));
-              }}
-              {...slot.opts}
-            />
-          ))}
+          {group.slots.map((slot) => {
+            const { kind, ...opts } = slot.opts;
+            return kind === "plain" ? (
+              <ImageUpload
+                key={slot.key}
+                label={slot.label}
+                hint={slot.hint}
+                value={images[slot.key]?.dataUrl || ""}
+                onChange={(url) => setImage(slot.key, url ? { dataUrl: url } : null)}
+                {...opts}
+              />
+            ) : (
+              <HeroImageEditor
+                key={slot.key}
+                kind={kind}
+                label={slot.label}
+                hint={slot.hint}
+                value={images[slot.key]}
+                onChange={(meta) => setImage(slot.key, meta)}
+                {...opts}
+              />
+            );
+          })}
         </div>
       ))}
       <div className="settings-savebar">

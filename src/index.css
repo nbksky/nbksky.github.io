@@ -161,20 +161,30 @@ p {
   background-position: center;
 }
 
-.page-hero--image {
-  background-image: var(--hero-img), linear-gradient(135deg, var(--primary-dark), var(--primary));
+/* 히어로/배너 배경 이미지 (위치·확대는 인라인 스타일). 섹션의 테마 그라데이션 위에 깔린다. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
   background-repeat: no-repeat;
+}
+
+.page-hero {
+  overflow: hidden;
 }
 
 .page-hero--image::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: rgba(var(--primary-rgb), 0.7);
 }
 
 .page-hero .container {
   position: relative;
+  z-index: 2;
 }
 
 .page-hero h1 {

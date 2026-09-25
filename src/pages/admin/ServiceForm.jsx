@@ -3,25 +3,26 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   createService,
   getService,
-  getSiteImage,
+  getSiteImageMeta,
   listServices,
-  saveSiteImage,
+  saveSiteImageMeta,
   updateService,
 } from "../../api/content";
 import ImageUpload from "../../components/admin/ImageUpload";
+import HeroImageEditor from "../../components/admin/HeroImageEditor";
 
 export default function ServiceForm() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
   const [form, setForm] = useState({ title: "", summary: "", detail: "", image: "" });
-  const [banner, setBanner] = useState("");
+  const [banner, setBanner] = useState(null);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!isEdit) return;
-    Promise.all([getService(id), getSiteImage(`service_${id}`)]).then(([data, bannerUrl]) => {
+    Promise.all([getService(id), getSiteImageMeta(`service_${id}`)]).then(([data, bannerMeta]) => {
       if (data) {
         setForm({
           title: data.title,
@@ -30,7 +31,7 @@ export default function ServiceForm() {
           image: data.image || "",
         });
       }
-      setBanner(bannerUrl);
+      setBanner(bannerMeta);
       setLoading(false);
     });
   }, [id, isEdit]);
@@ -51,7 +52,7 @@ export default function ServiceForm() {
         const ref = await createService({ ...form, order: existing.length });
         serviceId = ref.id;
       }
-      await saveSiteImage(`service_${serviceId}`, banner);
+      await saveSiteImageMeta(`service_${serviceId}`, banner);
       navigate("/admin/services");
     } finally {
       setSaving(false);
@@ -85,14 +86,14 @@ export default function ServiceForm() {
           value={form.image}
           onChange={(image) => setForm((f) => ({ ...f, image }))}
         />
-        <ImageUpload
+        <HeroImageEditor
+          kind="banner"
           label="서브 비주얼 (선택)"
-          hint="이 업무분야 상세 페이지 상단 배너입니다. 4:1 비율로 자동 크롭되며, 없으면 '업무분야 목록' 배너를 사용합니다."
+          hint="이 업무분야 상세 페이지 상단 배너입니다. 없으면 '업무분야 목록' 배너를 사용합니다."
           value={banner}
           onChange={setBanner}
           maxWidth={1600}
           maxBytes={200 * 1024}
-          aspect={4}
         />
         <div className="form-field">
           <label htmlFor="detail">상세 설명 (상세 페이지에 표시)</label>
