@@ -110,6 +110,15 @@
   color: var(--primary);
 }
 
+.sections-editor__caption {
+  flex: 1;
+  min-width: 240px;
+}
+
+.sections-editor__card .form-field {
+  margin-bottom: 0;
+}
+
 .sections-editor__preview-btn {
   background: var(--white);
   border: 1px solid var(--line);

@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { mergeAppearance } from "../theme";
+import { sectionImageKey } from "../utils/sections";
 
 const SETTINGS_DOC = "settings/site";
 
@@ -163,8 +164,14 @@ export async function updateService(id, data) {
 }
 
 export async function deleteService(id) {
+  // 단락 이미지는 별도 문서에 있으니 업무분야 문서를 지우기 전에 어떤 단락에 이미지가 있었는지 읽어 둔다
+  const existing = await getService(id).catch(() => null);
+  const withImages = (existing?.sections || []).filter((s) => s && s.image && s.id);
   await deleteDoc(doc(db, "services", id));
-  await saveSiteImage(`service_${id}`, "");
+  await Promise.all([
+    saveSiteImage(`service_${id}`, ""),
+    ...withImages.map((s) => saveSiteImage(sectionImageKey(id, s.id), "")),
+  ]);
 }
 
 // ---------- Notices (공지사항) ----------

@@ -14,8 +14,17 @@ export const STYLES = [
   ["numbered", "번호 강조 (번호 목록을 원형 번호로)"],
 ];
 
+// 단락 이미지(차트·표·사진) 배치
+export const IMG_POSITIONS = [
+  ["below", "내용 아래"],
+  ["above", "내용 위"],
+  ["side", "내용 오른쪽에 나란히 (넓은 화면)"],
+  ["only", "이미지만 (내용 숨김)"],
+];
+
 const ANIM_KEYS = ANIMATIONS.map(([k]) => k);
 const STYLE_KEYS = STYLES.map(([k]) => k);
+const IMG_KEYS = IMG_POSITIONS.map(([k]) => k);
 
 let seq = 0;
 const makeId = () => `s${Date.now().toString(36)}${(seq++).toString(36)}${Math.random().toString(36).slice(2, 6)}`;
@@ -24,14 +33,39 @@ export function newSection(partial = {}) {
   return { id: makeId(), title: "", body: "", anim: "slide", style: "plain", ...partial };
 }
 
-// 저장된 값을 안전한 형태로 맞춘다 (알 수 없는 값은 기본값)
+// 저장된 값을 안전한 형태로 맞춘다 (알 수 없는 값은 기본값).
+// 이미지 본문(imageUrl)은 Firestore 문서 크기 제한 때문에 단락 문서에 넣지 않고 별도 문서에 저장한다.
+// 단락에는 "이미지가 있다"는 표시(image)만 남기고, 관리자 폼과 공개 페이지는 따로 읽어서 imageUrl로 붙인다.
 function normalize(s) {
+  const imageUrl = typeof s.imageUrl === "string" ? s.imageUrl : "";
   return {
     id: typeof s.id === "string" && s.id ? s.id : makeId(),
     title: typeof s.title === "string" ? s.title : "",
     body: typeof s.body === "string" ? s.body : "",
     anim: ANIM_KEYS.includes(s.anim) ? s.anim : "slide",
     style: STYLE_KEYS.includes(s.style) ? s.style : "plain",
+    image: Boolean(imageUrl) || s.image === true,
+    caption: typeof s.caption === "string" ? s.caption : "",
+    imgPos: IMG_KEYS.includes(s.imgPos) ? s.imgPos : "below",
+    imageUrl,
+  };
+}
+
+// 단락 이미지가 저장되는 문서 키 (settings/img_<키>)
+export const sectionImageKey = (serviceId, sectionId) => `svc_${serviceId}_${sectionId}`;
+
+// Firestore 단락 문서에 저장할 모양 (이미지 본문은 제외)
+export function toStoredSection(s) {
+  const has = Boolean(s.imageUrl);
+  return {
+    id: s.id,
+    title: s.title,
+    body: s.body,
+    anim: s.anim,
+    style: s.style,
+    image: has,
+    caption: has ? s.caption : "",
+    imgPos: s.imgPos,
   };
 }
 
@@ -46,11 +80,11 @@ export function getSections(service) {
   return [];
 }
 
-// 저장 전: 완전히 빈 단락은 버린다
+// 저장 전: 제목·내용·이미지가 모두 없는 단락은 버린다 (이미지만 있는 단락은 남긴다)
 export function cleanSections(list) {
   return list
     .map((s) => normalize({ ...s, title: s.title.trim(), body: s.body.replace(/\s+$/g, "") }))
-    .filter((s) => s.title || s.body.trim());
+    .filter((s) => s.title || s.body.trim() || s.imageUrl);
 }
 
 // ---------- 내용 서식 ----------

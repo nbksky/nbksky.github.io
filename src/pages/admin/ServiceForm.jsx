@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   createService,
   getService,
+  getSiteImage,
   getSiteImageMeta,
   listServices,
+  saveSiteImage,
   saveSiteImageMeta,
   updateService,
 } from "../../api/content";
 import ImageUpload from "../../components/admin/ImageUpload";
 import HeroImageEditor from "../../components/admin/HeroImageEditor";
 import SectionsEditor from "../../components/admin/SectionsEditor";
-import { cleanSections, getSections } from "../../utils/sections";
+import { cleanSections, getSections, sectionImageKey, toStoredSection } from "../../utils/sections";
 
 export default function ServiceForm() {
   const { id } = useParams();
@@ -22,10 +24,13 @@ export default function ServiceForm() {
   const [banner, setBanner] = useState(null);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  // 불러온 단락 이미지 { 단락id: dataUrl } — 저장할 때 바뀐 것만 쓰고, 지운 것은 삭제하려고 기억해 둔다
+  const loadedImages = useRef({});
 
   useEffect(() => {
     if (!isEdit) return;
-    Promise.all([getService(id), getSiteImageMeta(`service_${id}`)]).then(([data, bannerMeta]) => {
+    Promise.all([getService(id), getSiteImageMeta(`service_${id}`)]).then(async ([data, bannerMeta]) => {
       if (data) {
         setForm({
           title: data.title,
@@ -33,7 +38,17 @@ export default function ServiceForm() {
           image: data.image || "",
         });
         // 예전 "상세 설명" 한 칸은 제목 없는 단락 하나로 불러온다 (저장하면 단락 형식으로 바뀐다)
-        setSections(getSections(data));
+        const list = getSections(data);
+        // 이미지가 있는 단락은 별도 문서에서 이미지를 읽어 붙인다
+        const withImages = await Promise.all(
+          list.map(async (s) => {
+            if (!s.image) return s;
+            const imageUrl = await getSiteImage(sectionImageKey(id, s.id)).catch(() => "");
+            return { ...s, imageUrl };
+          })
+        );
+        loadedImages.current = Object.fromEntries(withImages.filter((s) => s.imageUrl).map((s) => [s.id, s.imageUrl]));
+        setSections(withImages);
       }
       setBanner(bannerMeta);
       setLoading(false);
@@ -47,9 +62,11 @@ export default function ServiceForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setError("");
     try {
       let serviceId = id;
-      const data = { ...form, sections: cleanSections(sections), detail: "" };
+      const cleaned = cleanSections(sections);
+      const data = { ...form, sections: cleaned.map(toStoredSection), detail: "" };
       if (isEdit) {
         await updateService(id, data);
       } else {
@@ -60,7 +77,23 @@ export default function ServiceForm() {
         serviceId = ref.id;
       }
       await saveSiteImageMeta(`service_${serviceId}`, banner);
+
+      // 단락 이미지: 바뀐 것만 저장하고, 지워졌거나 삭제된 단락의 이미지는 문서를 지운다
+      const before = loadedImages.current;
+      const after = Object.fromEntries(cleaned.filter((s) => s.imageUrl).map((s) => [s.id, s.imageUrl]));
+      const jobs = [];
+      for (const [sid, url] of Object.entries(after)) {
+        if (before[sid] !== url) jobs.push(saveSiteImage(sectionImageKey(serviceId, sid), url));
+      }
+      for (const sid of Object.keys(before)) {
+        if (!(sid in after)) jobs.push(saveSiteImage(sectionImageKey(serviceId, sid), ""));
+      }
+      await Promise.all(jobs);
+      loadedImages.current = after;
+
       navigate("/admin/services");
+    } catch (err) {
+      setError(`저장 중 오류가 발생했습니다. (${err?.message || "알 수 없는 오류"})`);
     } finally {
       setSaving(false);
     }
@@ -106,6 +139,7 @@ export default function ServiceForm() {
         <button type="submit" className="btn btn-primary" disabled={saving}>
           {saving ? "저장 중..." : "저장"}
         </button>
+        {error && <p style={{ color: "#c0392b", marginTop: 12, fontSize: 14 }}>{error}</p>}
       </form>
     </div>
   );

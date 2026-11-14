@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { ANIMATIONS, STYLES, newSection } from "../../utils/sections";
+import { ANIMATIONS, IMG_POSITIONS, STYLES, newSection } from "../../utils/sections";
 import { ServiceSection } from "../public/ServiceSections";
+import ImageUpload from "./ImageUpload";
 import "./SectionsEditor.css";
 
 // 업무분야 상세 페이지의 단락 목록 편집기. 카드를 드래그(또는 ↑↓)로 순서 변경한다.
@@ -105,6 +106,37 @@ export default function SectionsEditor({ sections, onChange }) {
               value={s.body}
               onChange={(e) => update(s.id, { body: e.target.value })}
             />
+
+            <ImageUpload
+              label="이미지 (차트·표·사진, 선택)"
+              recommend="차트나 표는 글자가 읽히도록 가로 1200px 이상으로 올리세요 (가로 1600px보다 크면 자동으로 줄입니다). 비율은 그대로 표시되고, 방문자가 클릭하면 크게 볼 수 있습니다."
+              value={s.imageUrl || ""}
+              maxWidth={1600}
+              maxBytes={650 * 1024}
+              onChange={(url) => update(s.id, { imageUrl: url, image: Boolean(url) })}
+            />
+            {s.imageUrl && (
+              <div className="sections-editor__opts">
+                <label className="sections-editor__caption">
+                  <span>이미지 설명 (캡션·대체 텍스트, 선택)</span>
+                  <input
+                    placeholder="예: 개인회생 절차 흐름도"
+                    value={s.caption || ""}
+                    onChange={(e) => update(s.id, { caption: e.target.value })}
+                  />
+                </label>
+                <label>
+                  <span>이미지 배치</span>
+                  <select value={s.imgPos} onChange={(e) => update(s.id, { imgPos: e.target.value })}>
+                    {IMG_POSITIONS.map(([k, text]) => (
+                      <option key={k} value={k}>
+                        {text}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            )}
 
             <div className="sections-editor__opts">
               <label>
