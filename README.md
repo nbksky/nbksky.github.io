@@ -69,6 +69,18 @@ npm run deploy
 
 `deploy` 스크립트는 `vite build` 후 `gh-pages` 브랜치로 `dist` 폴더를 배포합니다. 이후 저장소의 **Settings → Pages**에서 배포 브랜치를 `gh-pages`로 지정하세요.
 
+### 커스텀 도메인 (nalawdo.co.kr)
+
+현재 `public/CNAME`에 `nalawdo.co.kr`이 지정되어 있습니다. 이 파일은 빌드 때 `dist`로 복사되어, 배포할 때마다 GitHub Pages의 도메인 설정이 풀리는 것을 막아 줍니다. 도메인을 바꾸려면 이 파일의 내용을 고치고 다시 배포하세요.
+
+1. DNS (후이즈 등 도메인 업체)
+   - 루트 도메인 A 레코드 4개: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+   - `www` CNAME 레코드: `nbksky.github.io` (저장소명은 붙이지 않음)
+   - IP는 GitHub이 바꿀 수 있으니 [공식 문서](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)와 대조하세요.
+2. GitHub 저장소 **Settings → Pages → Custom domain**에 도메인을 입력하고 저장, DNS 확인 후 **Enforce HTTPS** 켜기
+3. Firebase Console → Authentication → 설정 → **승인된 도메인**에 `nalawdo.co.kr`, `www.nalawdo.co.kr` 추가 (빠뜨리면 관리자 로그인 불가)
+4. EmailJS에서 허용 도메인을 제한했다면 새 도메인도 추가
+
 > 빌드에는 `.env`의 Firebase 값이 그대로 번들에 포함됩니다. Firebase 웹 API 키는 공개되어도 되는 값이지만(브라우저에서 항상 노출됨), 반드시 Firestore 보안 규칙(`firestore.rules`)으로 실제 접근 권한을 통제해야 합니다.
 
 ## 디자인 톤
