@@ -1,4 +1,6 @@
 .home-hero {
+  position: relative;
+  overflow: hidden;
   background: radial-gradient(circle at 80% 20%, var(--primary-light), var(--primary-dark) 65%);
   color: var(--white);
   padding: 120px 0 100px;
@@ -7,8 +9,6 @@
 /* 메인 이미지는 오버레이 없이 그대로 표시 */
 .home-hero--image {
   /* 배경 이미지(.hero-bg) 아래에 .home-hero의 테마 그라데이션이 깔려 투명 배경 인물 사진에도 테마 색이 보인다 */
-  position: relative;
-  overflow: hidden;
   min-height: 560px;
   display: flex;
   align-items: center;
@@ -39,6 +39,47 @@
   gap: 14px;
   margin-top: 34px;
   flex-wrap: wrap;
+}
+
+.home-hero__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.home-hero__scroll::after {
+  content: "";
+  width: 1px;
+  height: 36px;
+  background: var(--white);
+  transform-origin: top;
+  animation: hero-scroll-line 1.6s ease-in-out infinite;
+}
+
+@keyframes hero-scroll-line {
+  0% {
+    transform: scaleY(0);
+  }
+  60% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
 }
 
 .home-video {
@@ -179,6 +220,61 @@
 
 .home-notices__list a:hover {
   color: var(--accent);
+}
+
+/* 데스크톱: 섹션을 화면 한 장 단위로 나누고 스크롤 스냅으로 한 섹션씩 넘긴다.
+   섹션이 화면보다 길면(카드가 많은 경우 등) 브라우저가 그 섹션 안에서는 자연스럽게 스크롤된다. */
+html.snap-home {
+  --header-h: 72px;
+  --footer-h: 116px;
+  scroll-padding-top: var(--header-h);
+}
+
+@media (min-width: 861px) {
+  html.snap-home {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
+  html.snap-home .site-footer {
+    scroll-snap-align: end;
+  }
+
+  .snap-section {
+    min-height: calc(100vh - var(--header-h));
+    min-height: calc(100svh - var(--header-h));
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* 마지막 섹션은 푸터까지 한 화면에 들어오게 한다 */
+  .snap-section--last {
+    min-height: calc(100vh - var(--header-h) - var(--footer-h));
+    min-height: calc(100svh - var(--header-h) - var(--footer-h));
+  }
+
+  .home-video,
+  .home-services,
+  .home-contact,
+  .home-notices {
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+
+  .home-hero__scroll {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.snap-home {
+    scroll-behavior: auto;
+  }
+  .home-hero__scroll::after {
+    animation: none;
+  }
 }
 
 @media (max-width: 860px) {

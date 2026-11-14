@@ -5,6 +5,7 @@ import { listServices, listNotices } from "../../api/content";
 import { useSiteImage, useSiteImageMeta } from "../../hooks/useSiteImages";
 import HeroBg from "../../components/public/HeroBg";
 import MapLink from "../../components/public/MapLink";
+import SectionDots from "../../components/public/SectionDots";
 import "./Home.css";
 
 export default function Home() {
@@ -19,9 +20,32 @@ export default function Home() {
     listNotices().then((list) => setNotices(list.slice(0, 3))).catch(() => setNotices([]));
   }, []);
 
+  // 홈에서만 섹션 단위 스크롤 스냅을 켠다 (다른 페이지로 이동하면 해제)
+  useEffect(() => {
+    document.documentElement.classList.add("snap-home");
+    return () => document.documentElement.classList.remove("snap-home");
+  }, []);
+
+  const sections = [
+    { id: "hero", label: "메인" },
+    ...(settings.videoUrl ? [{ id: "video", label: "소개 영상" }] : []),
+    { id: "services", label: "업무 분야" },
+    { id: "contact", label: "상담 신청" },
+    ...(notices.length > 0 ? [{ id: "notices", label: "공지사항" }] : []),
+  ];
+  const lastId = sections[sections.length - 1].id;
+  const snap = (id) => `snap-section${id === lastId ? " snap-section--last" : ""}`;
+  const scrollToNext = () =>
+    document.getElementById(sections[1].id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
   return (
     <>
-      <section className={`home-hero ${heroImage ? "home-hero--image" : ""}`}>
+      <SectionDots sections={sections} />
+
+      <section
+        id="hero"
+        className={`home-hero ${heroImage ? "home-hero--image" : ""} ${snap("hero")}`}
+      >
         {heroImage && <HeroBg image={heroImage} />}
         <div className="container home-hero__inner">
           <p className="section-eyebrow" style={{ color: "var(--accent-hover)" }}>
@@ -45,10 +69,13 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        <button type="button" className="home-hero__scroll" onClick={scrollToNext}>
+          SCROLL
+        </button>
       </section>
 
       {settings.videoUrl ? (
-        <section className="home-video">
+        <section id="video" className={`home-video ${snap("video")}`}>
           <div className="container home-video__inner">
             <div>
               <p className="section-eyebrow">{settings.officeName}의 이야기</p>
@@ -74,7 +101,7 @@ export default function Home() {
         </section>
       ) : null}
 
-      <section className="home-services">
+      <section id="services" className={`home-services ${snap("services")}`}>
         <div className="container">
           <p className="section-eyebrow">SERVICES</p>
           <h2 className="section-heading">업무 분야</h2>
@@ -103,7 +130,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="home-contact">
+      <section id="contact" className={`home-contact ${snap("contact")}`}>
         <div className="container home-contact__inner">
           <div>
             <p className="section-eyebrow">CONSULTATION</p>
@@ -124,7 +151,7 @@ export default function Home() {
       </section>
 
       {notices.length > 0 && (
-        <section className="home-notices">
+        <section id="notices" className={`home-notices ${snap("notices")}`}>
           <div className="container">
             <p className="section-eyebrow">NOTICE</p>
             <h2 className="section-heading">공지사항</h2>
