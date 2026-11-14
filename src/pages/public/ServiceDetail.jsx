@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { getService } from "../../api/content";
 import { useSiteImageMeta } from "../../hooks/useSiteImages";
 import PageHero from "../../components/public/PageHero";
+import ServiceSections from "../../components/public/ServiceSections";
+import { getSections } from "../../utils/sections";
 import "./ContentPage.css";
 
 export default function ServiceDetail() {
@@ -38,7 +40,7 @@ export default function ServiceDetail() {
       <section className="content-body">
         <div className="container">
           {service.image && <img src={service.image} alt="" className="content-body__image" />}
-          <div className="content-body__text">{service.detail}</div>
+          <ServiceSections sections={getSections(service)} />
           <div style={{ marginTop: 40, display: "flex", gap: 12 }}>
             <Link to="/consultation" className="btn btn-primary">
               상담 신청하기

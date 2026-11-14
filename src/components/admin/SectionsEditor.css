@@ -1,0 +1,137 @@
+.sections-editor__hint {
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0 0 8px;
+}
+
+.sections-editor__hint code {
+  background: var(--surface);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.sections-editor__empty {
+  color: var(--text-soft);
+  font-size: 13px;
+  margin: 4px 0 10px;
+}
+
+.sections-editor {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sections-editor__card {
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sections-editor__card.is-dragging {
+  opacity: 0.45;
+}
+
+.sections-editor__card.is-over {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.sections-editor__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--primary);
+}
+
+.sections-editor__spacer {
+  flex: 1;
+}
+
+.sections-editor__handle {
+  cursor: grab;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-soft);
+  user-select: none;
+}
+
+.sections-editor__handle:hover {
+  background: var(--surface);
+  color: var(--primary);
+}
+
+.sections-editor__bar button {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sections-editor__bar button:disabled {
+  opacity: 0.35;
+}
+
+.sections-editor__bar .sections-editor__del {
+  color: #c0392b;
+}
+
+.sections-editor__opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.sections-editor__opts label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  min-width: 200px;
+}
+
+.sections-editor__opts label span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.sections-editor__preview-btn {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sections-editor__preview-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sections-editor__preview {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--surface-light);
+  padding: 14px 16px;
+}
+
+.sections-editor__preview .svc-section {
+  padding: 0;
+  border-top: none;
+}

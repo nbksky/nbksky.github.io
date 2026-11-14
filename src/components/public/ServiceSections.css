@@ -1,0 +1,179 @@
+/* 업무분야 상세 단락: 왼쪽 제목 / 오른쪽 내용 */
+.svc-sections {
+  display: flex;
+  flex-direction: column;
+}
+
+.svc-section {
+  display: grid;
+  grid-template-columns: minmax(180px, 22%) minmax(0, 1fr);
+  gap: 0 32px;
+  padding: 36px 0;
+  border-top: 1px solid var(--line);
+  color: var(--text);
+}
+
+.svc-section:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.svc-section--notitle {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.svc-section__title h3 {
+  font-family: var(--ff-card);
+  font-size: var(--fz-card);
+  font-weight: var(--fw-card);
+  color: var(--primary);
+  text-align: right;
+  line-height: 1.4;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--primary);
+}
+
+.svc-section__body {
+  min-width: 0;
+  font-size: var(--fz-body);
+  line-height: 1.9;
+}
+
+.svc-p {
+  margin: 0 0 14px;
+}
+
+.svc-h {
+  margin: 18px 0 8px;
+  color: var(--primary);
+  font-size: 1.05em;
+}
+
+.svc-h:first-child {
+  margin-top: 0;
+}
+
+/* 전역 CSS가 ul의 목록 기호를 지우므로 단락 안에서는 되살린다 */
+.svc-list {
+  margin: 0 0 14px;
+  padding-left: 1.4em;
+  list-style: disc;
+}
+
+ol.svc-list {
+  list-style: decimal;
+}
+
+.svc-list li {
+  margin-bottom: 6px;
+}
+
+.svc-section__body strong {
+  color: var(--primary);
+}
+
+/* 스타일: 회색 박스 목록 — 문단과 항목마다 박스로 */
+.svc-style-box .svc-p,
+.svc-style-box .svc-list li {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+}
+
+.svc-style-box .svc-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* 스타일: 번호 강조 — 번호 목록을 원형 번호로 */
+.svc-style-numbered ol.svc-list {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: svc-num;
+}
+
+.svc-style-numbered ol.svc-list li {
+  position: relative;
+  counter-increment: svc-num;
+  padding-left: 46px;
+  margin-bottom: 14px;
+  min-height: 34px;
+}
+
+.svc-style-numbered ol.svc-list li::before {
+  content: counter(svc-num);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 30px;
+  text-align: center;
+}
+
+/* 등장 애니메이션 (화면에 들어올 때 한 번). is-hidden 은 스크립트가 붙이고, 보이면 is-in 으로 바뀐다. */
+.svc-section[data-anim] .svc-section__title,
+.svc-section[data-anim] .svc-section__body {
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.svc-section[data-anim] .svc-section__body {
+  transition-delay: 0.2s;
+}
+
+.svc-section.is-hidden .svc-section__title,
+.svc-section.is-hidden .svc-section__body {
+  opacity: 0;
+}
+
+.svc-section.is-hidden[data-anim="slide"] .svc-section__title {
+  transform: translateX(-100px);
+}
+
+.svc-section.is-hidden[data-anim="slide"] .svc-section__body {
+  transform: translateX(100px);
+}
+
+.svc-section.is-hidden[data-anim="up"] .svc-section__title,
+.svc-section.is-hidden[data-anim="up"] .svc-section__body {
+  transform: translateY(40px);
+}
+
+@media (max-width: 860px) {
+  .svc-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px 0;
+    padding: 28px 0;
+  }
+
+  .svc-section__title h3 {
+    text-align: left;
+  }
+
+  .svc-section.is-hidden[data-anim="slide"] .svc-section__title {
+    transform: translateX(-40px);
+  }
+
+  .svc-section.is-hidden[data-anim="slide"] .svc-section__body {
+    transform: translateX(40px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svc-section[data-anim] .svc-section__title,
+  .svc-section[data-anim] .svc-section__body {
+    transition: none;
+  }
+
+  .svc-section.is-hidden .svc-section__title,
+  .svc-section.is-hidden .svc-section__body {
+    opacity: 1;
+    transform: none;
+  }
+}

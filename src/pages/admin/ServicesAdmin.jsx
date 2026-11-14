@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { deleteService, listServices, updateService } from "../../api/content";
+import { deleteService, listServices, normalizeServiceOrder } from "../../api/content";
 
 export default function ServicesAdmin() {
   const [items, setItems] = useState(null);
 
+  // 불러올 때 순서값을 0,1,2…로 정리한다 (삭제로 비었거나 겹친 값이 있어도 ↑↓가 동작하도록)
   const load = () => {
-    listServices().then(setItems).catch(() => setItems([]));
+    listServices()
+      .then((list) => normalizeServiceOrder(list).catch(() => list))
+      .then(setItems)
+      .catch(() => setItems([]));
   };
 
   useEffect(load, []);
@@ -18,14 +22,11 @@ export default function ServicesAdmin() {
   };
 
   const move = async (index, dir) => {
-    const target = items[index];
-    const swapWith = items[index + dir];
-    if (!swapWith) return;
-    await Promise.all([
-      updateService(target.id, { order: swapWith.order }),
-      updateService(swapWith.id, { order: target.order }),
-    ]);
-    load();
+    const to = index + dir;
+    if (to < 0 || to >= items.length) return;
+    const next = [...items];
+    [next[index], next[to]] = [next[to], next[index]];
+    setItems(await normalizeServiceOrder(next));
   };
 
   return (

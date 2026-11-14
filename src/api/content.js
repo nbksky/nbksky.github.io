@@ -147,6 +147,13 @@ export async function getService(id) {
   return { id: snap.id, ...snap.data() };
 }
 
+// 순서값을 0,1,2… 로 정리한다 (list는 화면에 보이는 순서). 값이 달라진 항목만 저장하고 정리된 목록을 돌려준다.
+// 삭제로 번호가 비거나 예전 버그로 겹친 순서값이 있어도 ↑↓가 항상 동작하게 한다.
+export async function normalizeServiceOrder(list) {
+  await Promise.all(list.filter((s, i) => s.order !== i).map((s) => updateService(s.id, { order: list.indexOf(s) })));
+  return list.map((s, i) => ({ ...s, order: i }));
+}
+
 export async function createService(data) {
   return addDoc(collection(db, "services"), data);
 }

@@ -10,12 +10,15 @@ import {
 } from "../../api/content";
 import ImageUpload from "../../components/admin/ImageUpload";
 import HeroImageEditor from "../../components/admin/HeroImageEditor";
+import SectionsEditor from "../../components/admin/SectionsEditor";
+import { cleanSections, getSections } from "../../utils/sections";
 
 export default function ServiceForm() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
-  const [form, setForm] = useState({ title: "", summary: "", detail: "", image: "" });
+  const [form, setForm] = useState({ title: "", summary: "", image: "" });
+  const [sections, setSections] = useState([]);
   const [banner, setBanner] = useState(null);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
@@ -27,9 +30,10 @@ export default function ServiceForm() {
         setForm({
           title: data.title,
           summary: data.summary,
-          detail: data.detail || "",
           image: data.image || "",
         });
+        // 예전 "상세 설명" 한 칸은 제목 없는 단락 하나로 불러온다 (저장하면 단락 형식으로 바뀐다)
+        setSections(getSections(data));
       }
       setBanner(bannerMeta);
       setLoading(false);
@@ -45,11 +49,14 @@ export default function ServiceForm() {
     setSaving(true);
     try {
       let serviceId = id;
+      const data = { ...form, sections: cleanSections(sections), detail: "" };
       if (isEdit) {
-        await updateService(id, form);
+        await updateService(id, data);
       } else {
         const existing = await listServices();
-        const ref = await createService({ ...form, order: existing.length });
+        // 삭제로 번호가 비어 있어도 겹치지 않도록 가장 큰 순서값 + 1
+        const next = Math.max(-1, ...existing.map((s) => (Number.isFinite(s.order) ? s.order : -1))) + 1;
+        const ref = await createService({ ...data, order: next });
         serviceId = ref.id;
       }
       await saveSiteImageMeta(`service_${serviceId}`, banner);
@@ -95,16 +102,7 @@ export default function ServiceForm() {
           maxWidth={1600}
           maxBytes={200 * 1024}
         />
-        <div className="form-field">
-          <label htmlFor="detail">상세 설명 (상세 페이지에 표시)</label>
-          <textarea
-            id="detail"
-            name="detail"
-            rows={12}
-            value={form.detail}
-            onChange={handleChange}
-          />
-        </div>
+        <SectionsEditor sections={sections} onChange={setSections} />
         <button type="submit" className="btn btn-primary" disabled={saving}>
           {saving ? "저장 중..." : "저장"}
         </button>
