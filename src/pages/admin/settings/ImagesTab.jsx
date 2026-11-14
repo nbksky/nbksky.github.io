@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getSiteImageMeta, saveSiteImageMeta } from "../../../api/content";
+import { getSettings, getSiteImageMeta, saveSettings, saveSiteImageMeta } from "../../../api/content";
+import { useSettings } from "../../../contexts/SettingsContext";
 import ImageUpload from "../../../components/admin/ImageUpload";
 import HeroImageEditor from "../../../components/admin/HeroImageEditor";
 import "./SettingsTabs.css";
@@ -65,16 +66,22 @@ const GROUPS = [
 const ALL_KEYS = GROUPS.flatMap((g) => g.slots.map((s) => s.key));
 
 export default function ImagesTab() {
+  const { refresh } = useSettings();
   const [images, setImages] = useState(null);
   const [original, setOriginal] = useState(null);
+  const [textPos, setTextPos] = useState(null);
+  const [originalPos, setOriginalPos] = useState(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    Promise.all(ALL_KEYS.map((k) => getSiteImageMeta(k))).then((metas) => {
+    Promise.all([getSettings(), ...ALL_KEYS.map((k) => getSiteImageMeta(k))]).then(([site, ...metas]) => {
       const map = Object.fromEntries(ALL_KEYS.map((k, i) => [k, metas[i]]));
       setImages(map);
       setOriginal(map);
+      const pos = { x: site.heroPosX, y: site.heroPosY };
+      setTextPos(pos);
+      setOriginalPos(pos);
     });
   }, []);
 
@@ -83,9 +90,15 @@ export default function ImagesTab() {
     setMessage("");
     try {
       const changed = ALL_KEYS.filter((k) => images[k] !== original[k]);
-      await Promise.all(changed.map((k) => saveSiteImageMeta(k, images[k])));
+      const posChanged = textPos.x !== originalPos.x || textPos.y !== originalPos.y;
+      await Promise.all([
+        ...changed.map((k) => saveSiteImageMeta(k, images[k])),
+        ...(posChanged ? [saveSettings({ heroPosX: textPos.x, heroPosY: textPos.y })] : []),
+      ]);
       setOriginal(images);
-      setMessage(changed.length ? "저장되었습니다" : "변경된 사진이 없습니다");
+      setOriginalPos(textPos);
+      if (posChanged) await refresh();
+      setMessage(changed.length || posChanged ? "저장되었습니다" : "변경된 내용이 없습니다");
     } catch {
       setMessage("저장 중 오류가 발생했습니다");
     } finally {
@@ -93,7 +106,7 @@ export default function ImagesTab() {
     }
   };
 
-  if (!images) return <p className="state-msg">불러오는 중...</p>;
+  if (!images || !textPos) return <p className="state-msg">불러오는 중...</p>;
 
   const setImage = (key, meta) => {
     setMessage("");
@@ -124,6 +137,15 @@ export default function ImagesTab() {
                 hint={slot.hint}
                 value={images[slot.key]}
                 onChange={(meta) => setImage(slot.key, meta)}
+                {...(slot.key === "hero"
+                  ? {
+                      textPos,
+                      onTextPosChange: (pos) => {
+                        setMessage("");
+                        setTextPos(pos);
+                      },
+                    }
+                  : {})}
                 {...opts}
               />
             );

@@ -16,6 +16,20 @@ const RECOMMEND = {
     "권장 사이즈: 가로 1600px × 세로 320px (5:1). 중요한 내용은 사진 가운데 가로 띠 안에 두세요. 화면 크기에 따라 위아래가 잘릴 수 있으며, 가로 1600px보다 큰 사진은 자동으로 줄여서 저장됩니다.",
 };
 
+const POS_X = [
+  ["left", "왼쪽"],
+  ["center", "가운데"],
+  ["right", "오른쪽"],
+];
+const POS_Y = [
+  ["top", "위"],
+  ["middle", "중간"],
+  ["bottom", "아래"],
+];
+// 미리보기 안의 글자 박스 위치(%)
+const BOX_LEFT = { left: "6%", center: "27%", right: "48%" };
+const BOX_TOP = { top: "8%", middle: "33%", bottom: "58%" };
+
 export default function HeroImageEditor({
   label,
   hint,
@@ -24,6 +38,8 @@ export default function HeroImageEditor({
   onChange,
   maxWidth = 1600,
   maxBytes = 300 * 1024,
+  textPos,
+  onTextPosChange,
 }) {
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
@@ -51,6 +67,16 @@ export default function HeroImageEditor({
   };
 
   const setAdjust = (patch) => onChange({ ...value, ...patch });
+
+  // 메인 이미지에서만 글자/버튼 위치를 반영한다. 모바일은 가로 가운데 고정이라 세로 위치만 따른다.
+  const textBoxStyle =
+    kind === "hero" && textPos
+      ? {
+          top: BOX_TOP[textPos.y],
+          height: "34%",
+          ...(device === "desktop" ? { left: BOX_LEFT[textPos.x] } : {}),
+        }
+      : undefined;
 
   return (
     <div className="form-field">
@@ -89,7 +115,7 @@ export default function HeroImageEditor({
             {value?.dataUrl && <HeroBg image={adjust} />}
             {!value?.dataUrl && <span className="hero-preview__empty">등록된 사진 없음</span>}
             {showText && (
-              <div className={`hero-preview__text hero-preview__text--${kind}`}>
+              <div className={`hero-preview__text hero-preview__text--${kind}`} style={textBoxStyle}>
                 {kind === "hero" ? "제목 · 버튼" : "제목"}
               </div>
             )}
@@ -112,6 +138,33 @@ export default function HeroImageEditor({
           )}
         </div>
         <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleFile} />
+
+        {kind === "hero" && textPos && onTextPosChange && (
+          <div className="hero-editor__pos">
+            <span className="hero-editor__pos-label">제목·버튼 위치</span>
+            <div className="hero-editor__pos-grid" role="group" aria-label="제목과 버튼 위치">
+              {POS_Y.map(([y, yText]) =>
+                POS_X.map(([x, xText]) => {
+                  const on = textPos.x === x && textPos.y === y;
+                  return (
+                    <button
+                      key={`${x}-${y}`}
+                      type="button"
+                      className={on ? "is-active" : ""}
+                      aria-label={`${yText} ${xText}`}
+                      aria-pressed={on}
+                      title={`${yText} ${xText}`}
+                      onClick={() => onTextPosChange({ x, y })}
+                    />
+                  );
+                })
+              )}
+            </div>
+            <p className="hero-editor__note">
+              제목, 부제목, 버튼이 한 덩어리로 이동합니다. 모바일에서는 가로는 항상 가운데 정렬됩니다.
+            </p>
+          </div>
+        )}
 
         {value?.dataUrl && (
           <div className="hero-editor__sliders">

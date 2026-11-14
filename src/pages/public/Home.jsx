@@ -33,6 +33,8 @@ export default function Home() {
     { id: "contact", label: "상담 신청" },
     ...(notices.length > 0 ? [{ id: "notices", label: "공지사항" }] : []),
   ];
+  const posX = ["left", "center", "right"].includes(settings.heroPosX) ? settings.heroPosX : "left";
+  const posY = ["top", "middle", "bottom"].includes(settings.heroPosY) ? settings.heroPosY : "middle";
   const lastId = sections[sections.length - 1].id;
   const snap = (id) => `snap-section${id === lastId ? " snap-section--last" : ""}`;
   const scrollToNext = () =>
@@ -44,7 +46,7 @@ export default function Home() {
 
       <section
         id="hero"
-        className={`home-hero ${heroImage ? "home-hero--image" : ""} ${snap("hero")}`}
+        className={`home-hero ${heroImage ? "home-hero--image" : ""} home-hero--x-${posX} home-hero--y-${posY} ${snap("hero")}`}
       >
         {heroImage && <HeroBg image={heroImage} />}
         <div className="container home-hero__inner">

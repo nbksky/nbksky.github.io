@@ -143,6 +143,42 @@
   height: 34%;
 }
 
+.hero-editor__pos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-editor__pos-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.hero-editor__pos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 36px);
+  gap: 6px;
+}
+
+.hero-editor__pos-grid button {
+  width: 36px;
+  height: 26px;
+  padding: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 5px;
+  background: var(--white);
+}
+
+.hero-editor__pos-grid button:hover {
+  border-color: var(--accent);
+}
+
+.hero-editor__pos-grid button.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
 .hero-editor__actions {
   display: flex;
   gap: 10px;

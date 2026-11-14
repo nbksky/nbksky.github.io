@@ -4,14 +4,53 @@
   background: radial-gradient(circle at 80% 20%, var(--primary-light), var(--primary-dark) 65%);
   color: var(--white);
   padding: 120px 0 100px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 메인 이미지는 오버레이 없이 그대로 표시 */
 .home-hero--image {
   /* 배경 이미지(.hero-bg) 아래에 .home-hero의 테마 그라데이션이 깔려 투명 배경 인물 사진에도 테마 색이 보인다 */
   min-height: 560px;
-  display: flex;
-  align-items: center;
+}
+
+/* 제목·부제목·버튼 덩어리의 위치 (관리자에서 선택). 세로는 flex 정렬, 가로는 글자/버튼 정렬로 처리한다. */
+.home-hero.home-hero--y-top {
+  justify-content: flex-start;
+}
+
+.home-hero.home-hero--y-middle {
+  justify-content: center;
+}
+
+.home-hero.home-hero--y-bottom {
+  justify-content: flex-end;
+  padding-bottom: 130px;
+}
+
+.home-hero--x-center .home-hero__inner {
+  text-align: center;
+}
+
+.home-hero--x-center .home-hero__subtitle {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home-hero--x-center .home-hero__actions {
+  justify-content: center;
+}
+
+.home-hero--x-right .home-hero__inner {
+  text-align: right;
+}
+
+.home-hero--x-right .home-hero__subtitle {
+  margin-left: auto;
+}
+
+.home-hero--x-right .home-hero__actions {
+  justify-content: flex-end;
 }
 
 .home-hero--image .home-hero__inner {
@@ -280,6 +319,17 @@ html.snap-home {
 @media (max-width: 860px) {
   .home-hero {
     padding: 90px 0 70px;
+  }
+  /* 모바일은 화면이 좁아 가로 위치와 상관없이 가운데 정렬 */
+  .home-hero .home-hero__inner {
+    text-align: center;
+  }
+  .home-hero .home-hero__subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .home-hero .home-hero__actions {
+    justify-content: center;
   }
   .home-hero--image {
     min-height: 420px;

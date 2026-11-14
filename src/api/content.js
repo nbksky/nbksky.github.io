@@ -30,6 +30,8 @@ export const defaultSettings = {
   videoUrl: "",
   mapUrl: "",
   notifyEmail: "",
+  heroPosX: "left",
+  heroPosY: "middle",
 };
 
 // ---------- Settings ----------
