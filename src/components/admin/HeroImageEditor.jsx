@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { DEFAULT_HERO_LAYOUT, DEFAULT_IMAGE_ADJUST } from "../../api/content";
+import { useRef, useState } from "react";
+import { DEFAULT_HERO_LAYOUT, DEFAULT_HERO_SAFE, DEFAULT_IMAGE_ADJUST } from "../../api/content";
 import { resizeImage } from "../../utils/image";
 import HeroBg from "../public/HeroBg";
 import "./HeroImageEditor.css";
@@ -11,7 +11,7 @@ const ASPECTS = {
 };
 
 const RECOMMEND = {
-  hero: "권장 사이즈: 가로 1920px × 세로 1080px (16:9). 메인 화면은 16:9 틀 안에 사진·제목·버튼이 함께 배치되고, 16:9가 아닌 화면에서는 가장자리가 조금 잘립니다. 인물과 중요한 글자는 가장자리에서 조금 떨어뜨려 두세요. 가로 1600px보다 큰 사진은 자동으로 줄여서 저장됩니다.",
+  hero: "권장 사이즈: 가로 1920px × 세로 1080px (16:9). 메인 화면은 16:9 틀 안에 사진·제목·버튼이 함께 배치되고, 16:9가 아닌 화면에서는 가장자리가 조금 잘립니다. 가로 1600px보다 큰 사진은 자동으로 줄여서 저장됩니다.",
   banner:
     "권장 사이즈: 가로 1600px × 세로 320px (5:1). 중요한 내용은 사진 가운데 가로 띠 안에 두세요. 화면 크기에 따라 위아래가 잘릴 수 있으며, 가로 1600px보다 큰 사진은 자동으로 줄여서 저장됩니다.",
 };
@@ -22,10 +22,19 @@ const BOX_SIZE = {
   btn: { w: 24, h: 9 },
 };
 
-const clamp = (v) => Math.min(100, Math.max(0, v));
+const SAFE_MIN = 8; // 꼭 보일 영역의 최소 크기(%)
+const clamp = (v, min = 0, max = 100) => Math.min(max, Math.max(min, v));
 const round1 = (v) => Math.round(v * 10) / 10;
 // 가운데(50%)에 가까우면 자석처럼 붙인다
 const snapCenter = (v) => (Math.abs(v - 50) < 1.5 ? 50 : v);
+
+// 안전 영역 모서리 핸들: 어느 변이 움직이는지
+const SAFE_CORNERS = {
+  "safe-nw": { l: true, t: true },
+  "safe-ne": { r: true, t: true },
+  "safe-sw": { l: true, b: true },
+  "safe-se": { r: true, b: true },
+};
 
 export default function HeroImageEditor({
   label,
@@ -45,30 +54,13 @@ export default function HeroImageEditor({
   const [error, setError] = useState("");
   const [device, setDevice] = useState("desktop");
   const [showText, setShowText] = useState(true);
-  const [showSafe, setShowSafe] = useState(true);
   const [dragging, setDragging] = useState(null);
-  const [loadedSize, setLoadedSize] = useState(null);
 
   const adjust = { ...DEFAULT_IMAGE_ADJUST, ...value };
   const aspect = ASPECTS[kind][device];
   const hasLayout = kind === "hero" && layout && onLayoutChange;
   const boxesDraggable = hasLayout && device === "desktop";
-
-  // 사진을 드래그로 옮기려면 원본 크기가 필요하다
-  useEffect(() => {
-    const src = value?.dataUrl;
-    if (!src) return undefined;
-    let alive = true;
-    const img = new Image();
-    img.onload = () => {
-      if (alive) setLoadedSize({ src, w: img.naturalWidth, h: img.naturalHeight });
-    };
-    img.src = src;
-    return () => {
-      alive = false;
-    };
-  }, [value?.dataUrl]);
-  const imgSize = loadedSize && loadedSize.src === value?.dataUrl ? loadedSize : null;
+  const safe = hasLayout ? layout.safe : null;
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
@@ -88,7 +80,7 @@ export default function HeroImageEditor({
 
   const setAdjust = (patch) => onChange({ ...value, ...patch });
 
-  // mode: "photo" | "title" | "btn"
+  // mode: "photo" | "title" | "btn" | "safe-move" | "safe-nw|ne|sw|se"
   const beginDrag = (e, mode) => {
     if (e.button !== undefined && e.button !== 0) return;
     const stage = previewRef.current;
@@ -101,7 +93,7 @@ export default function HeroImageEditor({
       sx: e.clientX,
       sy: e.clientY,
       rect: stage.getBoundingClientRect(),
-      itemRect: mode === "photo" ? null : e.currentTarget.getBoundingClientRect(),
+      itemRect: mode === "title" || mode === "btn" ? e.currentTarget.getBoundingClientRect() : null,
       adjust: { ...adjust },
       layout: layout ? { ...layout } : null,
     };
@@ -114,18 +106,41 @@ export default function HeroImageEditor({
     const dx = e.clientX - d.sx;
     const dy = e.clientY - d.sy;
 
+    // 사진: 크기와 상관없이 네 방향으로 자유롭게 이동 (틀 대비 %). 빈 곳은 테마 색이 보인다.
     if (d.mode === "photo") {
-      if (!imgSize) return;
-      const bw = d.rect.width;
-      const bh = d.rect.height;
-      // 사진은 틀을 덮도록(cover) 커지고 확대 배율만큼 더 커진다. 틀과의 차이(slack)만큼만 움직일 수 있다.
-      const cover = Math.max(bw / imgSize.w, bh / imgSize.h) * d.adjust.zoom;
-      const slackX = bw - imgSize.w * cover;
-      const slackY = bh - imgSize.h * cover;
-      const patch = {};
-      if (Math.abs(slackX) > 1) patch.x = round1(clamp(d.adjust.x + (dx / slackX) * 100));
-      if (Math.abs(slackY) > 1) patch.y = round1(clamp(d.adjust.y + (dy / slackY) * 100));
-      onChange({ ...value, ...patch });
+      onChange({
+        ...value,
+        offX: round1(clamp(d.adjust.offX + (dx / d.rect.width) * 100, -150, 150)),
+        offY: round1(clamp(d.adjust.offY + (dy / d.rect.height) * 100, -150, 150)),
+      });
+      return;
+    }
+
+    // 꼭 보일 영역: 이동 또는 모서리 크기 조절 (틀 대비 %)
+    if (d.mode.startsWith("safe")) {
+      const dxp = (dx / d.rect.width) * 100;
+      const dyp = (dy / d.rect.height) * 100;
+      const s = d.layout.safe;
+      let { x, y, w, h } = s;
+      if (d.mode === "safe-move") {
+        x = clamp(s.x + dxp, 0, 100 - s.w);
+        y = clamp(s.y + dyp, 0, 100 - s.h);
+      } else {
+        const c = SAFE_CORNERS[d.mode];
+        const right = s.x + s.w;
+        const bottom = s.y + s.h;
+        if (c.l) {
+          x = clamp(s.x + dxp, 0, right - SAFE_MIN);
+          w = right - x;
+        }
+        if (c.r) w = clamp(s.x + s.w + dxp, s.x + SAFE_MIN, 100) - s.x;
+        if (c.t) {
+          y = clamp(s.y + dyp, 0, bottom - SAFE_MIN);
+          h = bottom - y;
+        }
+        if (c.b) h = clamp(s.y + s.h + dyp, s.y + SAFE_MIN, 100) - s.y;
+      }
+      onLayoutChange({ ...d.layout, safe: { x: round1(x), y: round1(y), w: round1(w), h: round1(h) } });
       return;
     }
 
@@ -151,6 +166,8 @@ export default function HeroImageEditor({
     height: `${BOX_SIZE[type].h}%`,
     transform: `translate(${-x}%, ${-y}%)`,
   });
+
+  const toggleSafe = (on) => onLayoutChange({ ...layout, safe: on ? { ...DEFAULT_HERO_SAFE } : null });
 
   return (
     <div className="form-field">
@@ -181,18 +198,23 @@ export default function HeroImageEditor({
           </label>
           {hasLayout && device === "desktop" && (
             <label className="hero-editor__check">
-              <input type="checkbox" checked={showSafe} onChange={(e) => setShowSafe(e.target.checked)} />
-              안전 영역 표시
+              <input type="checkbox" checked={!!safe} onChange={(e) => toggleSafe(e.target.checked)} />
+              꼭 보일 영역 사용
             </label>
           )}
         </div>
 
         <p className="hero-editor__note">
-          {value?.dataUrl ? "사진을 드래그하면 사진 위치가 움직입니다. " : ""}
+          {value?.dataUrl ? "빈 곳을 드래그하면 사진이 위·아래·왼쪽·오른쪽으로 움직입니다. " : ""}
           {boxesDraggable
-            ? "제목·버튼 상자도 각각 드래그해서 옮기세요. 가운데 근처에서는 자동으로 가운데에 붙습니다. 화면 비율이 16:9가 아니면 바깥쪽이 잘리니, 점선(안전 영역) 안쪽에 두는 것을 권합니다."
+            ? "제목·버튼 상자도 각각 드래그하세요. 가운데 근처에서는 가운데에 붙습니다. "
             : hasLayout
-              ? "모바일에서는 제목과 버튼이 가운데에 위에서 아래로 자동 배치됩니다. 위치는 데스크톱에서 정하세요."
+              ? "모바일에서는 제목과 버튼이 가운데에 위에서 아래로 자동 배치됩니다. 위치는 데스크톱에서 정하세요. "
+              : ""}
+          {boxesDraggable && safe
+            ? "'꼭 보일 영역'은 인물 등 잘리면 안 되는 부분에 맞추세요. 어떤 화면 비율에서도 이 영역이 잘리지 않게 사이트가 사진 틀을 맞춰 줍니다."
+            : boxesDraggable
+              ? "인물이 잘리면 안 된다면 '꼭 보일 영역 사용'을 켜세요."
               : ""}
         </p>
 
@@ -211,13 +233,30 @@ export default function HeroImageEditor({
             {value?.dataUrl && <HeroBg image={adjust} />}
             {!value?.dataUrl && <span className="hero-preview__empty">등록된 사진 없음</span>}
 
-            {showSafe && hasLayout && device === "desktop" && (
-              <span className="hero-preview__safe">
-                <span>안전 영역 (이 안쪽은 대부분의 화면에서 항상 보입니다)</span>
-              </span>
+            {safe && device === "desktop" && (
+              <div
+                className="hero-preview__safe"
+                style={{ left: `${safe.x}%`, top: `${safe.y}%`, width: `${safe.w}%`, height: `${safe.h}%` }}
+              >
+                <span
+                  className="hero-preview__safe-chip"
+                  onPointerDown={(e) => beginDrag(e, "safe-move")}
+                  title="끌어서 이동"
+                >
+                  꼭 보일 영역 · 끌어서 이동
+                </span>
+                {Object.keys(SAFE_CORNERS).map((mode) => (
+                  <span
+                    key={mode}
+                    className={`hero-preview__safe-handle hero-preview__safe-handle--${mode.slice(5)}`}
+                    onPointerDown={(e) => beginDrag(e, mode)}
+                    title="끌어서 크기 조절"
+                  />
+                ))}
+              </div>
             )}
 
-            {dragging && dragging !== "photo" && (
+            {dragging && (dragging === "title" || dragging === "btn") && (
               <>
                 <span className="hero-preview__guide hero-preview__guide--v" />
                 <span className="hero-preview__guide hero-preview__guide--h" />
@@ -266,11 +305,14 @@ export default function HeroImageEditor({
             <span className="hero-editor__pos-label">
               제목 {Math.round(layout.titleX)}%, {Math.round(layout.titleY)}% · 버튼 {Math.round(layout.btnX)}%,{" "}
               {Math.round(layout.btnY)}%
+              {safe
+                ? ` · 꼭 보일 영역 ${Math.round(safe.x)}%, ${Math.round(safe.y)}% (${Math.round(safe.w)}×${Math.round(safe.h)}%)`
+                : ""}
             </span>
             <button
               type="button"
               className="hero-editor__reset"
-              onClick={() => onLayoutChange({ ...DEFAULT_HERO_LAYOUT })}
+              onClick={() => onLayoutChange({ ...DEFAULT_HERO_LAYOUT, safe: layout.safe })}
             >
               제목·버튼 위치 초기화
             </button>
@@ -297,10 +339,12 @@ export default function HeroImageEditor({
         {value?.dataUrl && (
           <div className="hero-editor__sliders">
             <label>
-              <span>확대 {adjust.zoom.toFixed(2)}배</span>
+              <span>
+                크기 {adjust.zoom.toFixed(2)}배 (1배보다 작으면 사진이 줄어들고 남는 곳은 테마 색이 보입니다)
+              </span>
               <input
                 type="range"
-                min="1"
+                min="0.3"
                 max="3"
                 step="0.05"
                 value={adjust.zoom}
@@ -312,11 +356,8 @@ export default function HeroImageEditor({
               className="hero-editor__reset"
               onClick={() => setAdjust({ ...DEFAULT_IMAGE_ADJUST })}
             >
-              사진 위치/확대 초기화
+              사진 위치/크기 초기화
             </button>
-            <p className="hero-editor__note">
-              사진이 틀보다 클 때만 그 방향으로 움직입니다. 더 움직이려면 확대를 키워보세요.
-            </p>
           </div>
         )}
       </div>

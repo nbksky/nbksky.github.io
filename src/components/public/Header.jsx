@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
+import logo from "../../assets/logo.svg";
 import "./Header.css";
 
 export default function Header({ officeName }) {
@@ -9,7 +10,8 @@ export default function Header({ officeName }) {
     <header className="site-header">
       <div className="container site-header__inner">
         <Link to="/" className="site-header__logo" onClick={() => setOpen(false)}>
-          {officeName}
+          <img className="site-header__logo-img" src={logo} alt="" />
+          <span className="site-header__logo-text">{officeName}</span>
         </Link>
 
         <nav className={`site-header__nav ${open ? "is-open" : ""}`}>

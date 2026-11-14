@@ -123,27 +123,66 @@
   box-shadow: 0 0 0 2px var(--accent);
 }
 
-/* 화면 비율이 약 3:2 ~ 12:5 범위일 때 항상 보이는 영역 (16:9 무대를 cover로 채울 때 가로 84%, 세로 74%) */
+/* 꼭 보일 영역: 사용자가 드래그로 옮기고 모서리로 크기를 조절한다. 바깥은 어둡게 해서 범위를 분명히 보여준다.
+   상자 본문은 사진 드래그를 막지 않도록 pointer-events를 끄고, 이동 칩과 모서리 핸들만 받는다. */
 .hero-preview__safe {
   position: absolute;
   z-index: 2;
-  left: 8%;
-  top: 13%;
-  width: 84%;
-  height: 74%;
-  border: 1.5px dashed rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+  border: 1.5px dashed rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.38);
   pointer-events: none;
 }
 
-.hero-preview__safe span {
+.hero-preview__safe-chip {
   position: absolute;
-  left: 6px;
-  bottom: 4px;
+  left: 16px;
+  top: 5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--white);
   font-size: 10px;
   font-weight: 700;
-  color: var(--white);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  cursor: move;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.hero-preview__safe-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--white);
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.hero-preview__safe-handle--nw {
+  top: -7px;
+  left: -7px;
+  cursor: nwse-resize;
+}
+
+.hero-preview__safe-handle--ne {
+  top: -7px;
+  right: -7px;
+  cursor: nesw-resize;
+}
+
+.hero-preview__safe-handle--sw {
+  bottom: -7px;
+  left: -7px;
+  cursor: nesw-resize;
+}
+
+.hero-preview__safe-handle--se {
+  bottom: -7px;
+  right: -7px;
+  cursor: nwse-resize;
 }
 
 .hero-preview__guide {

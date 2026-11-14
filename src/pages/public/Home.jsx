@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
 import { getHeroLayout, listServices, listNotices } from "../../api/content";
 import { useSiteImage, useSiteImageMeta } from "../../hooks/useSiteImages";
+import useHeroStage from "../../hooks/useHeroStage";
 import HeroBg from "../../components/public/HeroBg";
 import MapLink from "../../components/public/MapLink";
 import SectionDots from "../../components/public/SectionDots";
@@ -34,6 +35,9 @@ export default function Home() {
     ...(notices.length > 0 ? [{ id: "notices", label: "공지사항" }] : []),
   ];
   const layout = getHeroLayout(settings);
+  const heroRef = useRef(null);
+  // "꼭 보일 영역"이 지정되어 있으면 그 영역이 잘리지 않게 틀의 위치/크기를 계산한다
+  const stageStyle = useHeroStage(heroRef, layout.safe);
   // 위치가 왼쪽/오른쪽에 치우쳐 있으면 글자도 그쪽으로 정렬한다
   const alignOf = (x) => (x < 34 ? "left" : x > 66 ? "right" : "center");
   const lastId = sections[sections.length - 1].id;
@@ -47,10 +51,11 @@ export default function Home() {
 
       <section
         id="hero"
+        ref={heroRef}
         className={`home-hero ${heroImage ? "home-hero--image" : ""} ${snap("hero")}`}
       >
         {/* 사진·제목·버튼은 16:9 무대 안에서 같은 비율로 움직인다 (관리자 미리보기와 동일) */}
-        <div className="hero-stage">
+        <div className="hero-stage" style={stageStyle || undefined}>
           {heroImage && <HeroBg image={heroImage} />}
           <div
             className={`hero-item home-hero__inner hero-align-${alignOf(layout.titleX)}`}

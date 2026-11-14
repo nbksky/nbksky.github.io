@@ -15,7 +15,7 @@ const GROUPS = [
       {
         key: "hero",
         label: "메인 이미지",
-        hint: "오버레이 없이 메인 상단 배경으로 표시됩니다. 배경 없는(투명) PNG는 테마 색 위에 올라갑니다. 미리보기에서 사진, 제목, 버튼을 직접 드래그해 위치를 정하세요.",
+        hint: "오버레이 없이 메인 상단 배경으로 표시됩니다. 배경 없는(투명) PNG는 테마 색 위에 올라갑니다. 미리보기에서 사진, 제목, 버튼, '꼭 보일 영역'을 직접 드래그해 정하세요.",
         opts: { kind: "hero", maxWidth: 1600, maxBytes: 300 * 1024 },
       },
     ],
@@ -90,7 +90,7 @@ export default function ImagesTab() {
     setMessage("");
     try {
       const changed = ALL_KEYS.filter((k) => images[k] !== original[k]);
-      const posChanged = Object.keys(layout).some((k) => layout[k] !== originalLayout[k]);
+      const posChanged = JSON.stringify(layout) !== JSON.stringify(originalLayout);
       await Promise.all([
         ...changed.map((k) => saveSiteImageMeta(k, images[k])),
         ...(posChanged
@@ -100,6 +100,7 @@ export default function ImagesTab() {
                 heroTitleY: layout.titleY,
                 heroBtnX: layout.btnX,
                 heroBtnY: layout.btnY,
+                heroSafe: layout.safe,
               }),
             ]
           : []),

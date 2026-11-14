@@ -15,14 +15,29 @@
 }
 
 .site-header__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--ff-card);
   font-size: var(--fz-card);
   font-weight: var(--fw-card);
   color: var(--primary);
+  min-width: 0;
+  max-width: 55vw;
+}
+
+/* 상호 앞의 로고. 높이만 정하고 가로는 원본 비율을 따른다 */
+.site-header__logo-img {
+  display: block;
+  flex: none;
+  height: 40px;
+  width: auto;
+}
+
+.site-header__logo-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 55vw;
 }
 
 .site-header__nav {
