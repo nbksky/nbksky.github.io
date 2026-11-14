@@ -34,6 +34,28 @@ export const defaultSettings = {
   heroPosY: "middle",
 };
 
+// ---------- 메인 히어로 제목/버튼 위치 ----------
+// 16:9 "무대" 안의 위치(%). 0은 무대의 왼쪽/위쪽 끝, 100은 오른쪽/아래쪽 끝에 붙는다.
+export const DEFAULT_HERO_LAYOUT = { titleX: 6, titleY: 35, btnX: 6, btnY: 71 };
+
+// 예전 3×3 선택값(heroPosX/heroPosY)을 쓰던 설정은 가까운 위치로 변환한다.
+const LEGACY_X = { left: 6, center: 50, right: 94 };
+const LEGACY_Y = { top: 5, middle: 35, bottom: 62 };
+
+export function getHeroLayout(settings = {}) {
+  const num = (v) => typeof v === "number" && Number.isFinite(v);
+  const legacyX = LEGACY_X[settings.heroPosX];
+  const legacyY = LEGACY_Y[settings.heroPosY];
+  const titleX = num(settings.heroTitleX) ? settings.heroTitleX : (legacyX ?? DEFAULT_HERO_LAYOUT.titleX);
+  const titleY = num(settings.heroTitleY) ? settings.heroTitleY : (legacyY ?? DEFAULT_HERO_LAYOUT.titleY);
+  return {
+    titleX,
+    titleY,
+    btnX: num(settings.heroBtnX) ? settings.heroBtnX : titleX,
+    btnY: num(settings.heroBtnY) ? settings.heroBtnY : Math.min(96, titleY + 36),
+  };
+}
+
 // ---------- Settings ----------
 export async function getSettings() {
   if (!db) return defaultSettings;

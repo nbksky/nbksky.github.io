@@ -14,48 +14,63 @@
   min-height: 560px;
 }
 
-/* 제목·부제목·버튼 덩어리의 위치 (관리자에서 선택). 세로는 flex 정렬, 가로는 글자/버튼 정렬로 처리한다. */
-.home-hero.home-hero--y-top {
-  justify-content: flex-start;
+/* 16:9 "무대": 사진·제목·버튼을 한 틀에 넣어 화면 비율이 달라도 사진 속 같은 지점에 붙어 있게 한다.
+   무대는 섹션을 꽉 채우도록(cover) 커지고 넘치는 가장자리는 잘린다. 관리자 미리보기도 같은 16:9다.
+   위치는 무대 대비 %: 0은 무대의 왼쪽/위쪽 끝, 100은 오른쪽/아래쪽 끝에 붙는다. */
+.hero-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, calc((100vh - 72px) * 16 / 9));
+  width: max(100%, calc((100svh - 72px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
 }
 
-.home-hero.home-hero--y-middle {
-  justify-content: center;
+.hero-item {
+  position: absolute;
+  z-index: 2;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  transform: translate(calc(var(--x) * -1%), calc(var(--y) * -1%));
+  width: max-content;
+  max-width: 60%;
 }
 
-.home-hero.home-hero--y-bottom {
-  justify-content: flex-end;
-  padding-bottom: 130px;
+.hero-align-left {
+  text-align: left;
 }
 
-.home-hero--x-center .home-hero__inner {
+.hero-align-center {
   text-align: center;
 }
 
-.home-hero--x-center .home-hero__subtitle {
+.hero-align-right {
+  text-align: right;
+}
+
+.hero-align-center .home-hero__subtitle {
   margin-left: auto;
   margin-right: auto;
 }
 
-.home-hero--x-center .home-hero__actions {
-  justify-content: center;
-}
-
-.home-hero--x-right .home-hero__inner {
-  text-align: right;
-}
-
-.home-hero--x-right .home-hero__subtitle {
+.hero-align-right .home-hero__subtitle {
   margin-left: auto;
 }
 
-.home-hero--x-right .home-hero__actions {
+.hero-item.home-hero__actions {
+  margin-top: 0;
+}
+
+.hero-align-center.home-hero__actions {
+  justify-content: center;
+}
+
+.hero-align-right.home-hero__actions {
   justify-content: flex-end;
 }
 
-.home-hero--image .home-hero__inner {
-  position: relative;
-  z-index: 2;
+.home-hero--image .hero-item {
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
 }
 
@@ -305,6 +320,11 @@ html.snap-home {
   .home-hero__scroll {
     display: flex;
   }
+
+  /* 데스크톱: 위치는 무대 기준이라 위아래 여백이 필요 없다 */
+  .home-hero {
+    padding: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -319,9 +339,21 @@ html.snap-home {
 @media (max-width: 860px) {
   .home-hero {
     padding: 90px 0 70px;
+    justify-content: center;
+    align-items: center;
   }
-  /* 모바일은 화면이 좁아 가로 위치와 상관없이 가운데 정렬 */
-  .home-hero .home-hero__inner {
+  /* 모바일은 화면이 좁아 무대/드래그 위치를 쓰지 않고 가운데 정렬로 위에서 아래로 쌓는다 */
+  .hero-stage {
+    display: contents;
+  }
+  .home-hero .hero-item {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: auto;
+    max-width: 100%;
+    padding: 0 20px;
     text-align: center;
   }
   .home-hero .home-hero__subtitle {
@@ -330,6 +362,7 @@ html.snap-home {
   }
   .home-hero .home-hero__actions {
     justify-content: center;
+    margin-top: 28px;
   }
   .home-hero--image {
     min-height: 420px;

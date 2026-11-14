@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSettings, getSiteImageMeta, saveSettings, saveSiteImageMeta } from "../../../api/content";
+import { getHeroLayout, getSettings, getSiteImageMeta, saveSettings, saveSiteImageMeta } from "../../../api/content";
 import { useSettings } from "../../../contexts/SettingsContext";
 import ImageUpload from "../../../components/admin/ImageUpload";
 import HeroImageEditor from "../../../components/admin/HeroImageEditor";
@@ -15,7 +15,7 @@ const GROUPS = [
       {
         key: "hero",
         label: "메인 이미지",
-        hint: "오버레이 없이 메인 상단 배경으로 표시됩니다. 배경 없는(투명) PNG는 테마 색 위에 올라갑니다.",
+        hint: "오버레이 없이 메인 상단 배경으로 표시됩니다. 배경 없는(투명) PNG는 테마 색 위에 올라갑니다. 미리보기에서 사진, 제목, 버튼을 직접 드래그해 위치를 정하세요.",
         opts: { kind: "hero", maxWidth: 1600, maxBytes: 300 * 1024 },
       },
     ],
@@ -69,8 +69,8 @@ export default function ImagesTab() {
   const { refresh } = useSettings();
   const [images, setImages] = useState(null);
   const [original, setOriginal] = useState(null);
-  const [textPos, setTextPos] = useState(null);
-  const [originalPos, setOriginalPos] = useState(null);
+  const [layout, setLayout] = useState(null);
+  const [originalLayout, setOriginalLayout] = useState(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -79,9 +79,9 @@ export default function ImagesTab() {
       const map = Object.fromEntries(ALL_KEYS.map((k, i) => [k, metas[i]]));
       setImages(map);
       setOriginal(map);
-      const pos = { x: site.heroPosX, y: site.heroPosY };
-      setTextPos(pos);
-      setOriginalPos(pos);
+      const pos = getHeroLayout(site);
+      setLayout(pos);
+      setOriginalLayout(pos);
     });
   }, []);
 
@@ -90,13 +90,22 @@ export default function ImagesTab() {
     setMessage("");
     try {
       const changed = ALL_KEYS.filter((k) => images[k] !== original[k]);
-      const posChanged = textPos.x !== originalPos.x || textPos.y !== originalPos.y;
+      const posChanged = Object.keys(layout).some((k) => layout[k] !== originalLayout[k]);
       await Promise.all([
         ...changed.map((k) => saveSiteImageMeta(k, images[k])),
-        ...(posChanged ? [saveSettings({ heroPosX: textPos.x, heroPosY: textPos.y })] : []),
+        ...(posChanged
+          ? [
+              saveSettings({
+                heroTitleX: layout.titleX,
+                heroTitleY: layout.titleY,
+                heroBtnX: layout.btnX,
+                heroBtnY: layout.btnY,
+              }),
+            ]
+          : []),
       ]);
       setOriginal(images);
-      setOriginalPos(textPos);
+      setOriginalLayout(layout);
       if (posChanged) await refresh();
       setMessage(changed.length || posChanged ? "저장되었습니다" : "변경된 내용이 없습니다");
     } catch {
@@ -106,7 +115,7 @@ export default function ImagesTab() {
     }
   };
 
-  if (!images || !textPos) return <p className="state-msg">불러오는 중...</p>;
+  if (!images || !layout) return <p className="state-msg">불러오는 중...</p>;
 
   const setImage = (key, meta) => {
     setMessage("");
@@ -139,10 +148,10 @@ export default function ImagesTab() {
                 onChange={(meta) => setImage(slot.key, meta)}
                 {...(slot.key === "hero"
                   ? {
-                      textPos,
-                      onTextPosChange: (pos) => {
+                      layout,
+                      onLayoutChange: (next) => {
                         setMessage("");
-                        setTextPos(pos);
+                        setLayout(next);
                       },
                     }
                   : {})}

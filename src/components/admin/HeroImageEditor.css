@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-width: 620px;
+  max-width: 780px;
 }
 
 .hero-editor__hint,
@@ -12,7 +12,7 @@
 }
 
 .hero-editor__recommend {
-  max-width: 620px;
+  max-width: 780px;
   margin-bottom: 8px;
   padding: 10px 12px;
   background: var(--accent-soft);
@@ -82,7 +82,93 @@
 }
 
 .hero-preview--desktop {
-  max-width: 560px;
+  max-width: 720px;
+}
+
+/* 미리보기 안에서 드래그할 수 있게 한다 (터치 스크롤과 겹치지 않도록 touch-action 차단) */
+.hero-preview.is-draggable {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.hero-preview.is-dragging {
+  cursor: grabbing;
+}
+
+.hero-preview__item {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+  background: rgba(30, 30, 30, 0.28);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+.hero-preview__item--btn {
+  background: rgba(var(--accent-rgb, 226, 137, 47), 0.55);
+}
+
+.hero-preview__item.is-active {
+  border-style: solid;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* 화면 비율이 약 3:2 ~ 12:5 범위일 때 항상 보이는 영역 (16:9 무대를 cover로 채울 때 가로 84%, 세로 74%) */
+.hero-preview__safe {
+  position: absolute;
+  z-index: 2;
+  left: 8%;
+  top: 13%;
+  width: 84%;
+  height: 74%;
+  border: 1.5px dashed rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.hero-preview__safe span {
+  position: absolute;
+  left: 6px;
+  bottom: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--white);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.hero-preview__guide {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.hero-preview__guide--v {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.hero-preview__guide--h {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.hero-preview__text--static {
+  pointer-events: none;
 }
 
 .hero-preview--mobile {
@@ -153,30 +239,6 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--primary);
-}
-
-.hero-editor__pos-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 36px);
-  gap: 6px;
-}
-
-.hero-editor__pos-grid button {
-  width: 36px;
-  height: 26px;
-  padding: 0;
-  border: 1.5px solid var(--line);
-  border-radius: 5px;
-  background: var(--white);
-}
-
-.hero-editor__pos-grid button:hover {
-  border-color: var(--accent);
-}
-
-.hero-editor__pos-grid button.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
 }
 
 .hero-editor__actions {

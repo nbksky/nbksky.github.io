@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSettings } from "../../contexts/SettingsContext";
-import { listServices, listNotices } from "../../api/content";
+import { getHeroLayout, listServices, listNotices } from "../../api/content";
 import { useSiteImage, useSiteImageMeta } from "../../hooks/useSiteImages";
 import HeroBg from "../../components/public/HeroBg";
 import MapLink from "../../components/public/MapLink";
@@ -33,8 +33,9 @@ export default function Home() {
     { id: "contact", label: "상담 신청" },
     ...(notices.length > 0 ? [{ id: "notices", label: "공지사항" }] : []),
   ];
-  const posX = ["left", "center", "right"].includes(settings.heroPosX) ? settings.heroPosX : "left";
-  const posY = ["top", "middle", "bottom"].includes(settings.heroPosY) ? settings.heroPosY : "middle";
+  const layout = getHeroLayout(settings);
+  // 위치가 왼쪽/오른쪽에 치우쳐 있으면 글자도 그쪽으로 정렬한다
+  const alignOf = (x) => (x < 34 ? "left" : x > 66 ? "right" : "center");
   const lastId = sections[sections.length - 1].id;
   const snap = (id) => `snap-section${id === lastId ? " snap-section--last" : ""}`;
   const scrollToNext = () =>
@@ -46,23 +47,32 @@ export default function Home() {
 
       <section
         id="hero"
-        className={`home-hero ${heroImage ? "home-hero--image" : ""} home-hero--x-${posX} home-hero--y-${posY} ${snap("hero")}`}
+        className={`home-hero ${heroImage ? "home-hero--image" : ""} ${snap("hero")}`}
       >
-        {heroImage && <HeroBg image={heroImage} />}
-        <div className="container home-hero__inner">
-          <p className="section-eyebrow" style={{ color: "var(--accent-hover)" }}>
-            {settings.repName}
-          </p>
-          <h1>
-            {settings.heroTitle.split("\n").map((line, i) => (
-              <span key={i}>
-                {line}
-                <br />
-              </span>
-            ))}
-          </h1>
-          <p className="home-hero__subtitle">{settings.heroSubtitle}</p>
-          <div className="home-hero__actions">
+        {/* 사진·제목·버튼은 16:9 무대 안에서 같은 비율로 움직인다 (관리자 미리보기와 동일) */}
+        <div className="hero-stage">
+          {heroImage && <HeroBg image={heroImage} />}
+          <div
+            className={`hero-item home-hero__inner hero-align-${alignOf(layout.titleX)}`}
+            style={{ "--x": layout.titleX, "--y": layout.titleY }}
+          >
+            <p className="section-eyebrow" style={{ color: "var(--accent-hover)" }}>
+              {settings.repName}
+            </p>
+            <h1>
+              {settings.heroTitle.split("\n").map((line, i) => (
+                <span key={i}>
+                  {line}
+                  <br />
+                </span>
+              ))}
+            </h1>
+            <p className="home-hero__subtitle">{settings.heroSubtitle}</p>
+          </div>
+          <div
+            className={`hero-item home-hero__actions hero-align-${alignOf(layout.btnX)}`}
+            style={{ "--x": layout.btnX, "--y": layout.btnY }}
+          >
             <Link to="/consultation" className="btn btn-primary">
               상담 신청하기
             </Link>
