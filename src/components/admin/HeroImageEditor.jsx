@@ -1,5 +1,10 @@
 import { useRef, useState } from "react";
-import { DEFAULT_HERO_LAYOUT, DEFAULT_HERO_SAFE, DEFAULT_IMAGE_ADJUST } from "../../api/content";
+import {
+  DEFAULT_HERO_LAYOUT,
+  DEFAULT_HERO_SAFE,
+  DEFAULT_IMAGE_ADJUST,
+  DEFAULT_OVERLAY,
+} from "../../api/content";
 import { resizeImage } from "../../utils/image";
 import HeroBg from "../public/HeroBg";
 import "./HeroImageEditor.css";
@@ -224,7 +229,11 @@ export default function HeroImageEditor({
             className={`hero-preview hero-preview--${kind} hero-preview--${device}${
               value?.dataUrl ? " is-draggable" : ""
             }${dragging ? " is-dragging" : ""}`}
-            style={{ aspectRatio: aspect }}
+            style={
+              kind === "banner"
+                ? { aspectRatio: aspect, "--preview-overlay": adjust.overlay ?? DEFAULT_OVERLAY }
+                : { aspectRatio: aspect }
+            }
             onPointerDown={(e) => value?.dataUrl && beginDrag(e, "photo")}
             onPointerMove={handleMove}
             onPointerUp={endDrag}
@@ -351,10 +360,29 @@ export default function HeroImageEditor({
                 onChange={(e) => setAdjust({ zoom: Number(e.target.value) })}
               />
             </label>
+            {kind === "banner" && (
+              <label>
+                <span>
+                  테마 색 덮기 {Math.round((adjust.overlay ?? DEFAULT_OVERLAY) * 100)}%
+                  {(adjust.overlay ?? DEFAULT_OVERLAY) === 0 ? " (원본 사진 그대로)" : ""}
+                </span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={adjust.overlay ?? DEFAULT_OVERLAY}
+                  onChange={(e) => setAdjust({ overlay: Number(e.target.value) })}
+                />
+              </label>
+            )}
             <button
               type="button"
               className="hero-editor__reset"
-              onClick={() => setAdjust({ ...DEFAULT_IMAGE_ADJUST })}
+              onClick={() => {
+                const { x, y, zoom, offX, offY } = DEFAULT_IMAGE_ADJUST;
+                setAdjust({ x, y, zoom, offX, offY });
+              }}
             >
               사진 위치/크기 초기화
             </button>

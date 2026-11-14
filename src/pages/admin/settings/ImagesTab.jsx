@@ -21,7 +21,7 @@ const GROUPS = [
     ],
   },
   {
-    title: "서브 비주얼 (주색 70% 오버레이가 덮입니다)",
+    title: "서브 비주얼 (사진 위에 테마 색이 덮이며, 진하기를 사진마다 조절할 수 있습니다)",
     slots: [
       { key: "banner_about", label: "사무소 소개", opts: BANNER },
       { key: "banner_location", label: "오시는 길", opts: BANNER },
