@@ -210,6 +210,57 @@
   pointer-events: none;
 }
 
+/* 서브 비주얼 미리보기: 제목/부제목 글자색 샘플 */
+.hero-preview__text--sample {
+  flex-direction: column;
+  gap: 2px;
+  background: none;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.hero-preview__text--sample strong {
+  font-size: 15px;
+}
+
+.hero-preview__text--sample span {
+  font-size: 10px;
+  font-weight: 400;
+}
+
+/* 이 배너만 쓰는 글자색 */
+.hero-editor__color {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hero-editor__color-label {
+  min-width: 88px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.hero-editor__color input[type="color"] {
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: none;
+}
+
+.hero-editor__color code {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.hero-editor__auto {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
 .hero-preview--mobile {
   max-width: 190px;
 }

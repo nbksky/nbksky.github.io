@@ -52,6 +52,35 @@ function ColorField({ field, value, onChange }) {
   );
 }
 
+// 비워 두면 "자동"(기존 동작)인 항목: 자동 상태에서는 설명만 보이고, "직접 지정"을 누르면 색을 고를 수 있다
+function OptionalColorField({ field, value, startColor, onChange }) {
+  if (!value) {
+    return (
+      <div className="color-field">
+        <div className="color-field__head">
+          <div>
+            <strong>{field.label}</strong>
+            <span>
+              {field.hint} · 지금: <b>자동 ({field.autoLabel})</b>
+            </span>
+          </div>
+          <button type="button" className="settings-reset" onClick={() => onChange(startColor)}>
+            직접 지정
+          </button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <ColorField field={field} value={value} onChange={onChange} />
+      <button type="button" className="settings-reset" onClick={() => onChange("")}>
+        자동으로 되돌리기 ({field.autoLabel})
+      </button>
+    </div>
+  );
+}
+
 export default function ColorsTab({ appearance, onChange }) {
   const setColor = (key) => (hex) =>
     onChange({ ...appearance, colors: { ...appearance.colors, [key]: hex } });
@@ -59,14 +88,24 @@ export default function ColorsTab({ appearance, onChange }) {
   return (
     <div className="settings-split">
       <div className="settings-split__main">
-        {COLOR_FIELDS.map((field) => (
-          <ColorField
-            key={field.key}
-            field={field}
-            value={appearance.colors[field.key]}
-            onChange={setColor(field.key)}
-          />
-        ))}
+        {COLOR_FIELDS.map((field) =>
+          field.optional ? (
+            <OptionalColorField
+              key={field.key}
+              field={field}
+              value={appearance.colors[field.key]}
+              startColor={field.startFrom ? appearance.colors[field.startFrom] : field.startColor}
+              onChange={setColor(field.key)}
+            />
+          ) : (
+            <ColorField
+              key={field.key}
+              field={field}
+              value={appearance.colors[field.key]}
+              onChange={setColor(field.key)}
+            />
+          )
+        )}
         <button
           type="button"
           className="settings-reset"

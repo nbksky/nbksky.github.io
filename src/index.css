@@ -188,6 +188,15 @@ p {
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
 }
 
+/* 글자색을 어둡게 지정한 경우에는 어두운 그림자 대신 흰 후광으로 */
+.page-hero--clear.page-hero--title-dark h1 {
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.75);
+}
+
+.page-hero--clear.page-hero--sub-dark p {
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.75);
+}
+
 .page-hero .container {
   position: relative;
   z-index: 2;
@@ -199,15 +208,19 @@ p {
   font-size: var(--fz-banner);
   font-weight: var(--fw-banner);
   letter-spacing: 0.15em;
-  color: var(--accent);
+  /* 사진별 지정(--page-hero-title) > 테마의 서브 비주얼 제목 색(--banner-title-color, 자동이면 강조색) */
+  color: var(--page-hero-title, var(--banner-title-color, var(--accent)));
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--accent);
+  border-bottom: 1px solid currentColor;
 }
 
 .page-hero p {
   margin-top: 16px;
-  font-size: var(--fz-caption);
-  color: rgba(255, 255, 255, 0.8);
+  font-family: var(--ff-bannerSub, var(--ff-caption));
+  font-size: var(--fz-bannerSub, var(--fz-caption));
+  font-weight: var(--fw-bannerSub, var(--fw-caption));
+  /* 사진별 지정(--page-hero-sub) > 테마의 서브 비주얼 부제목 색(--banner-sub-color, 자동이면 흰색 80%) */
+  color: var(--page-hero-sub, var(--banner-sub-color, rgba(255, 255, 255, 0.8)));
 }
 
 .state-msg {

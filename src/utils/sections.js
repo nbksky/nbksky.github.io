@@ -113,12 +113,15 @@ export function parseBody(text) {
         cur = { type: "ul", items: [] };
       }
       cur.items.push(m[1]);
-    } else if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) {
+    } else if ((m = line.match(/^\s*(\d+)[.)]\s+(.*)$/))) {
+      // 입력한 번호를 버리지 않는다: 목록의 시작 번호(start)로 보존한다.
+      // 항목 사이에 빈 줄이나 설명 문단이 끼어 목록이 여러 개로 나뉘어도 각자 입력한 번호로 시작하고,
+      // 붙어 있는 줄은 첫 번호부터 순서대로 올라간다.
       if (!cur || cur.type !== "ol") {
         flush();
-        cur = { type: "ol", items: [] };
+        cur = { type: "ol", start: Number(m[1]), items: [] };
       }
-      cur.items.push(m[1]);
+      cur.items.push(m[2]);
     } else {
       if (!cur || cur.type !== "p") {
         flush();

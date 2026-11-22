@@ -17,16 +17,27 @@ export function SectionBody({ text }) {
         </h4>
       );
     }
-    if (b.type === "ul" || b.type === "ol") {
-      const Tag = b.type;
+    if (b.type === "ol") {
+      // start: 입력한 번호. data-n: 번호 강조 스타일의 원형 번호에 쓴다.
       return (
-        <Tag key={i} className="svc-list">
+        <ol key={i} className="svc-list" start={b.start}>
+          {b.items.map((it, j) => (
+            <li key={j} data-n={b.start + j}>
+              <Inline text={it} />
+            </li>
+          ))}
+        </ol>
+      );
+    }
+    if (b.type === "ul") {
+      return (
+        <ul key={i} className="svc-list">
           {b.items.map((it, j) => (
             <li key={j}>
               <Inline text={it} />
             </li>
           ))}
-        </Tag>
+        </ul>
       );
     }
     return (

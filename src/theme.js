@@ -5,6 +5,23 @@ export const COLOR_FIELDS = [
   { key: "text", label: "본문 글자색", hint: "본문 텍스트" },
   { key: "textSoft", label: "보조 글자색", hint: "설명글·날짜" },
   { key: "line", label: "선/테두리색", hint: "구분선·입력창 테두리" },
+  // optional: 비워 두면 "자동"(기존 동작 그대로). 직접 지정하면 그 색을 쓴다. 사진마다 따로 정하는 것도 가능(사진 에디터).
+  {
+    key: "bannerTitle",
+    label: "서브 비주얼 제목 색",
+    hint: "서브 페이지 배너의 큰 제목",
+    optional: true,
+    autoLabel: "강조색과 같음",
+    startFrom: "accent",
+  },
+  {
+    key: "bannerSub",
+    label: "서브 비주얼 부제목 색",
+    hint: "배너 제목 밑의 작은 글씨",
+    optional: true,
+    autoLabel: "흰색 80%",
+    startColor: "#ffffff",
+  },
 ];
 
 export const DEFAULT_COLORS = {
@@ -14,7 +31,23 @@ export const DEFAULT_COLORS = {
   text: "#2a2320",
   textSoft: "#6b6058",
   line: "#e7ded4",
+  bannerTitle: "",
+  bannerSub: "",
 };
+
+// 배너 제목/부제목의 자동 색 (색을 지정하지 않았을 때). 제목은 강조색, 부제목은 흰색 80%.
+export const BANNER_SUB_AUTO = "rgba(255, 255, 255, 0.8)";
+
+const HEX = /^#[0-9a-f]{6}$/i;
+export const isHexColor = (v) => typeof v === "string" && HEX.test(v);
+
+// 글자색이 어두운지(밝은 배경용인지) 판단한다. 밝은 사진 위의 어두운 글씨에 흰 후광을 줄 때 쓴다.
+export function isDarkColor(hex) {
+  if (!isHexColor(hex)) return false;
+  const n = parseInt(hex.slice(1), 16);
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.55;
+}
 
 export const FONT_OPTIONS = [
   { id: "noto-sans", label: "Noto Sans KR (고딕)", css: "'Noto Sans KR'", query: "Noto+Sans+KR:wght@400;500;700;900", weights: [400, 500, 700, 900] },
@@ -31,6 +64,7 @@ export const FONT_ROLES = [
   { key: "menu", label: "메뉴" },
   { key: "hero", label: "히어로 큰 제목" },
   { key: "banner", label: "서브 비주얼 제목" },
+  { key: "bannerSub", label: "서브 비주얼 부제목" },
   { key: "section", label: "섹션 제목" },
   { key: "card", label: "소제목 / 카드 제목" },
   { key: "body", label: "본문" },
@@ -42,6 +76,7 @@ export const DEFAULT_FONTS = {
   menu: { family: "noto-sans", size: 15, weight: 700 },
   hero: { family: "noto-sans", size: 42, weight: 900 },
   banner: { family: "noto-sans", size: 34, weight: 500 },
+  bannerSub: { family: "noto-sans", size: 14, weight: 400 },
   section: { family: "noto-sans", size: 30, weight: 900 },
   card: { family: "noto-sans", size: 20, weight: 900 },
   body: { family: "noto-sans", size: 16, weight: 400 },
@@ -58,6 +93,8 @@ export function mergeAppearance(saved) {
   for (const role of Object.keys(DEFAULT_FONTS)) {
     fonts[role] = { ...DEFAULT_FONTS[role], ...(saved?.fonts?.[role] || {}) };
   }
+  // 서브 비주얼 부제목 글꼴은 예전엔 "보조 설명"을 따랐다. 아직 따로 저장하지 않았다면 보조 설명 값을 이어받아 모양이 바뀌지 않게 한다.
+  if (!saved?.fonts?.bannerSub) fonts.bannerSub = { ...fonts.caption };
   return { colors: { ...DEFAULT_COLORS, ...(saved?.colors || {}) }, fonts };
 }
 
@@ -109,6 +146,9 @@ export function buildStyleVars(appearance) {
     "--text": colors.text,
     "--text-soft": colors.textSoft,
     "--line": colors.line,
+    // 서브 비주얼 제목/부제목 색: 지정하지 않으면 예전과 같은 자동 색
+    "--banner-title-color": isHexColor(colors.bannerTitle) ? colors.bannerTitle : colors.accent,
+    "--banner-sub-color": isHexColor(colors.bannerSub) ? colors.bannerSub : BANNER_SUB_AUTO,
   };
   for (const role of Object.keys(DEFAULT_FONTS)) {
     const f = fonts[role];

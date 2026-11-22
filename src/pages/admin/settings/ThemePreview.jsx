@@ -11,7 +11,7 @@ export default function ThemePreview({ appearance }) {
     <div className="theme-scope theme-preview" style={buildStyleVars(appearance)}>
       <section className="page-hero theme-preview__hero">
         <h1>서브 비주얼 제목</h1>
-        <p>보조 설명 글자가 이렇게 보입니다.</p>
+        <p>서브 비주얼 부제목이 이렇게 보입니다.</p>
       </section>
       <div className="theme-preview__body">
         <div className="theme-preview__menu">

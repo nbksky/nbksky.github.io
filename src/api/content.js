@@ -99,10 +99,20 @@ export async function saveAppearance(appearance) {
 // 문서: { dataUrl, x, y, zoom, offX, offY }
 //  - x/y: 확대 기준점(0~100%), zoom: 배율(0.3~3), offX/offY: 틀 대비 이동량(%, 자유 이동). 없으면 가운데/1배/이동 없음.
 //  - overlay: 서브 비주얼에 덮는 테마 색(주색)의 진하기(0~1). 0이면 원본 사진 그대로. 없으면 0.7(기존 동작).
+//  - titleColor/subColor: 서브 비주얼 제목·부제목 글자색(#rrggbb). 비어 있으면 테마 설정의 색을 따른다.
 const imageCache = new Map();
 
 export const DEFAULT_OVERLAY = 0.7;
-export const DEFAULT_IMAGE_ADJUST = { x: 50, y: 50, zoom: 1, offX: 0, offY: 0, overlay: DEFAULT_OVERLAY };
+export const DEFAULT_IMAGE_ADJUST = {
+  x: 50,
+  y: 50,
+  zoom: 1,
+  offX: 0,
+  offY: 0,
+  overlay: DEFAULT_OVERLAY,
+  titleColor: "",
+  subColor: "",
+};
 
 export async function getSiteImageMeta(key) {
   if (!db) return null;
@@ -121,9 +131,9 @@ export async function getSiteImage(key) {
 export async function saveSiteImageMeta(key, meta) {
   const ref = doc(db, `settings/img_${key}`);
   if (meta?.dataUrl) {
-    const { dataUrl, x, y, zoom, offX, offY, overlay } = { ...DEFAULT_IMAGE_ADJUST, ...meta };
-    await setDoc(ref, { dataUrl, x, y, zoom, offX, offY, overlay });
-    imageCache.set(key, { dataUrl, x, y, zoom, offX, offY, overlay });
+    const { dataUrl, x, y, zoom, offX, offY, overlay, titleColor, subColor } = { ...DEFAULT_IMAGE_ADJUST, ...meta };
+    await setDoc(ref, { dataUrl, x, y, zoom, offX, offY, overlay, titleColor, subColor });
+    imageCache.set(key, { dataUrl, x, y, zoom, offX, offY, overlay, titleColor, subColor });
   } else {
     await deleteDoc(ref);
     imageCache.set(key, null);

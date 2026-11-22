@@ -6,8 +6,35 @@ import {
   DEFAULT_OVERLAY,
 } from "../../api/content";
 import { resizeImage } from "../../utils/image";
+import { useSettings } from "../../contexts/SettingsContext";
+import { BANNER_SUB_AUTO, isHexColor } from "../../theme";
 import HeroBg from "../public/HeroBg";
 import "./HeroImageEditor.css";
+
+// 이 배너만 쓰는 글자색. 비워 두면 테마 설정의 색을 따른다.
+function TextColorRow({ label, value, autoText, startColor, onChange }) {
+  return (
+    <div className="hero-editor__color">
+      <span className="hero-editor__color-label">{label}</span>
+      {value ? (
+        <>
+          <input type="color" value={value} onChange={(e) => onChange(e.target.value)} aria-label={`${label} 선택`} />
+          <code>{value}</code>
+          <button type="button" className="hero-editor__reset" onClick={() => onChange("")}>
+            테마 색으로
+          </button>
+        </>
+      ) : (
+        <>
+          <span className="hero-editor__auto">테마 색을 따름 ({autoText})</span>
+          <button type="button" className="hero-editor__reset" onClick={() => onChange(startColor)}>
+            직접 지정
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
 
 // 실제 화면(히어로/배너)의 가로:세로 비율. 메인 데스크톱은 공개 페이지의 16:9 무대와 같다.
 const ASPECTS = {
@@ -52,6 +79,7 @@ export default function HeroImageEditor({
   layout,
   onLayoutChange,
 }) {
+  const { appearance } = useSettings();
   const inputRef = useRef(null);
   const previewRef = useRef(null);
   const dragRef = useRef(null);
@@ -63,6 +91,11 @@ export default function HeroImageEditor({
 
   const adjust = { ...DEFAULT_IMAGE_ADJUST, ...value };
   const aspect = ASPECTS[kind][device];
+  // 서브 비주얼 글자색: 이 사진에 지정한 색 > 테마 설정의 색 > 자동(제목은 강조색, 부제목은 흰색 80%)
+  const themeTitle = isHexColor(appearance?.colors?.bannerTitle) ? appearance.colors.bannerTitle : appearance?.colors?.accent;
+  const themeSub = isHexColor(appearance?.colors?.bannerSub) ? appearance.colors.bannerSub : BANNER_SUB_AUTO;
+  const previewTitleColor = isHexColor(adjust.titleColor) ? adjust.titleColor : themeTitle;
+  const previewSubColor = isHexColor(adjust.subColor) ? adjust.subColor : themeSub;
   const hasLayout = kind === "hero" && layout && onLayoutChange;
   const boxesDraggable = hasLayout && device === "desktop";
   const safe = hasLayout ? layout.safe : null;
@@ -301,7 +334,14 @@ export default function HeroImageEditor({
               </div>
             )}
 
-            {showText && !hasLayout && (
+            {showText && !hasLayout && kind === "banner" && (
+              <div className="hero-preview__text hero-preview__text--banner hero-preview__text--static hero-preview__text--sample">
+                <strong style={{ color: previewTitleColor }}>제목</strong>
+                <span style={{ color: previewSubColor }}>부제목</span>
+              </div>
+            )}
+
+            {showText && !hasLayout && kind !== "banner" && (
               <div className={`hero-preview__text hero-preview__text--${kind} hero-preview__text--static`}>
                 제목
               </div>
@@ -375,6 +415,24 @@ export default function HeroImageEditor({
                   onChange={(e) => setAdjust({ overlay: Number(e.target.value) })}
                 />
               </label>
+            )}
+            {kind === "banner" && (
+              <>
+                <TextColorRow
+                  label="제목 글자색"
+                  value={isHexColor(adjust.titleColor) ? adjust.titleColor : ""}
+                  autoText={isHexColor(appearance?.colors?.bannerTitle) ? appearance.colors.bannerTitle : "강조색"}
+                  startColor="#ffffff"
+                  onChange={(c) => setAdjust({ titleColor: c })}
+                />
+                <TextColorRow
+                  label="부제목 글자색"
+                  value={isHexColor(adjust.subColor) ? adjust.subColor : ""}
+                  autoText={isHexColor(appearance?.colors?.bannerSub) ? appearance.colors.bannerSub : "흰색 80%"}
+                  startColor="#ffffff"
+                  onChange={(c) => setAdjust({ subColor: c })}
+                />
+              </>
             )}
             <button
               type="button"

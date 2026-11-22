@@ -1,5 +1,8 @@
 .content-body {
   padding: 70px 0 100px;
+  /* 아직 등장하지 않은 단락은 옆으로 밀려 있어서(애니메이션 시작 위치) 좁은 화면에서 가로 스크롤을 만든다 → 넘치는 부분은 잘라낸다 */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .content-body__image {

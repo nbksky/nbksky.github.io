@@ -90,19 +90,18 @@ ol.svc-list {
 .svc-style-numbered ol.svc-list {
   list-style: none;
   padding-left: 0;
-  counter-reset: svc-num;
 }
 
 .svc-style-numbered ol.svc-list li {
   position: relative;
-  counter-increment: svc-num;
   padding-left: 46px;
   margin-bottom: 14px;
   min-height: 34px;
 }
 
 .svc-style-numbered ol.svc-list li::before {
-  content: counter(svc-num);
+  /* 입력한 번호(data-n)를 그대로 표시. 목록이 쪼개져 있어도 매번 1로 돌아가지 않는다 */
+  content: attr(data-n);
   position: absolute;
   left: 0;
   top: 2px;
